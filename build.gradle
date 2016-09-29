@@ -1,0 +1,38 @@
+buildscript {
+	ext {
+		springBootVersion = '1.4.1.RELEASE'
+	}
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.1.RELEASE")
+	}
+}
+
+apply plugin: 'groovy'
+apply plugin: 'spring-boot'
+
+jar {
+	baseName = 'timneh'
+	version = '0.0.1-SNAPSHOT'
+}
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+	mavenCentral()
+}
+
+
+dependencies {
+	compile('org.springframework.boot:spring-boot-starter-web') {
+		exclude module: 'spring-boot-starter-tomcat'
+	}
+	compile     'org.codehaus.groovy:groovy-all:2.4.7'
+	compile     'org.springframework.boot:spring-boot-starter-jetty'
+	compile     'org.springframework.boot:spring-boot-starter-actuator'
+	testCompile 'org.spockframework:spock-core:1.1-groovy-2.4-rc-2'
+	testCompile 'org.spockframework:spock-spring:1.1-groovy-2.4-rc-2'
+	testCompile 'org.springframework.boot:spring-boot-starter-test'
+}
