@@ -6,7 +6,7 @@ buildscript {
 		mavenCentral()
 	}
 	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.1.RELEASE")
+		classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.4.1.RELEASE'
 	}
 }
 
@@ -24,7 +24,6 @@ repositories {
 	mavenCentral()
 }
 
-
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-web') {
 		exclude module: 'spring-boot-starter-tomcat'
@@ -32,7 +31,15 @@ dependencies {
 	compile     'org.codehaus.groovy:groovy-all:2.4.7'
 	compile     'org.springframework.boot:spring-boot-starter-jetty'
 	compile     'org.springframework.boot:spring-boot-starter-actuator'
+	runtime     'org.webjars:angularjs:1.5.8'
+	runtime     'org.webjars:bootstrap:3.3.4'
+	runtime     'org.webjars:webjars-locator:0.32'
 	testCompile 'org.spockframework:spock-core:1.1-groovy-2.4-rc-2'
 	testCompile 'org.spockframework:spock-spring:1.1-groovy-2.4-rc-2'
 	testCompile 'org.springframework.boot:spring-boot-starter-test'
 }
+
+bootRun {
+	addResources = true // Reload static resources live
+}
+
