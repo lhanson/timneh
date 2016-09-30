@@ -18,9 +18,9 @@ class IndexIT extends Specification {
 
 	def "get index"() {
 		when:
-			def response = template.getForEntity(base.toString(), String);
+			def response = template.getForEntity(base.toString(), String)
 
 		then:
-			'Greetings from Spring Boot!' == response.body
+			response.body.contains "<title>Timneh</title>"
 	}
 }
