@@ -20,6 +20,25 @@ jar {
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
+// apply the runtimeClasspath from "test" sourceSet to the new one
+// to include any needed assets: test, main, test-dependencies and main-dependencies
+sourceSets {
+	integrationTest {
+		compileClasspath += sourceSets.test.runtimeClasspath
+		// somehow this redeclaration is needed, but should be irrelevant
+		// since runtimeClasspath always expands compileClasspath
+		runtimeClasspath += sourceSets.test.runtimeClasspath
+	}
+}
+
+// define custom test task for running integration tests
+task integrationTest(type: Test) {
+	description = "Runs Integration Tests"
+	testClassesDir = sourceSets.integrationTest.output.classesDir
+	classpath = sourceSets.integrationTest.runtimeClasspath
+}
+integrationTest.dependsOn test
+
 repositories {
 	mavenCentral()
 }
