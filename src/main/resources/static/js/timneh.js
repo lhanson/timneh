@@ -24,10 +24,12 @@ angular.module('timneh', [ 'ngRoute' ])
 	.controller('home', function($http, userService) {
 		var self = this;
 		console.log('Creating home controller');
-		$http.get('/now').then(function(response) {
-			self.localDateTime = response.data;
-		})
-		self.username = userService.username
+		if (userService.authenticated) {
+			$http.get('/now').then(function(response) {
+				self.localDateTime = response.data;
+			})
+			self.username = userService.username
+		}
 	})
 
 	.controller('navigation', function($rootScope, $http, $location, userService) {
@@ -43,6 +45,7 @@ angular.module('timneh', [ 'ngRoute' ])
 				console.log('GET /user, response:', response);
 				if (response.data.name) {
 					userService.username = response.data.name;
+					userService.authenticated = true;
 					$rootScope.authenticated = true;
 				} else {
 					$rootScope.authenticated = false;

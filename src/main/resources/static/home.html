@@ -1,8 +1,7 @@
 <h1>Greeting</h1>
 <div ng-show="authenticated">
-	<p>My name is {{controller.username}}</p>
-	<p>The time is {{controller.localDateTime.content}}</p>
+	<p>Welcome, {{controller.username}}, the time is {{controller.localDateTime.content}}</p>
 </div>
 <div ng-show="!authenticated">
-	<p>Login to see your greeting</p>
+	<p>Login to see your content</p>
 </div>
