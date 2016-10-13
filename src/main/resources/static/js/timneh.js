@@ -1,6 +1,7 @@
 angular.module('timneh', [ 'ngRoute' ])
 
 	.config(function($routeProvider, $httpProvider) {
+		console.log('Configuring AngularJS app');
 		$routeProvider.when('/', {
 			templateUrl : 'home.html',
 			controller : 'home',
@@ -14,23 +15,34 @@ angular.module('timneh', [ 'ngRoute' ])
 		$httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
 	})
 
-	.controller('home', function($http) {
+	.factory('userService', function() {
+		console.log('Creating userService');
+		var userServiceInstance = { };
+		return userServiceInstance;
+	})
+
+	.controller('home', function($http, userService) {
 		var self = this;
+		console.log('Creating home controller');
 		$http.get('/now').then(function(response) {
 			self.localDateTime = response.data;
 		})
-		self.greeting = {id: 'xxx', content: 'Hello World!'}
+		self.username = userService.username
 	})
 
-	.controller('navigation', function($rootScope, $http, $location) {
-		var self = this
+	.controller('navigation', function($rootScope, $http, $location, userService) {
+		var self = this;
+		console.log('Creating navigation controller');
 		var authenticate = function(credentials, callback) {
+			console.log("Authenticating");
 			var headers = credentials
 				? {authorization : "Basic " + btoa(credentials.username + ":" + credentials.password) }
 				: {};
 
 			$http.get('user', {headers : headers}).then(function(response) {
+				console.log('GET /user, response:', response);
 				if (response.data.name) {
+					userService.username = response.data.name;
 					$rootScope.authenticated = true;
 				} else {
 					$rootScope.authenticated = false;
