@@ -1,0 +1,5 @@
+# Configuration for local development
+
+logging:
+  level:
+    io.github.lhanson: TRACE
