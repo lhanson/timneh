@@ -51,6 +51,7 @@ dependencies {
 	compile     'org.springframework.boot:spring-boot-starter-jetty'
 	compile     'org.springframework.boot:spring-boot-starter-actuator'
 	compile     'org.springframework.boot:spring-boot-starter-security'
+	compile     'org.slf4j:jcl-over-slf4j:1.7.21'
 	runtime     'org.webjars:angularjs:1.5.8'
 	runtime     'org.webjars:bootstrap:3.3.4'
 	runtime     'org.webjars:webjars-locator:0.32'
