@@ -1,4 +1,4 @@
-package io.github.lhanson.security
+package io.github.lhanson.timneh.security
 
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails

@@ -1,4 +1,4 @@
-package io.github.lhanson.controller.security
+package io.github.lhanson.timneh.security
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc

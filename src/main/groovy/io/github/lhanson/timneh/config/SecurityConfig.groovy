@@ -1,4 +1,4 @@
-package io.github.lhanson.config
+package io.github.lhanson.timneh.config
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean

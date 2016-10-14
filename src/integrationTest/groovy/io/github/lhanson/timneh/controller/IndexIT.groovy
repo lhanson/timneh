@@ -1,4 +1,4 @@
-package io.github.lhanson.controller
+package io.github.lhanson.timneh.controller
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.embedded.LocalServerPort
