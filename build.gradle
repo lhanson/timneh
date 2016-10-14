@@ -50,10 +50,13 @@ dependencies {
 	compile     'org.codehaus.groovy:groovy-all:2.4.7'
 	compile     'org.springframework.boot:spring-boot-starter-actuator'
 	compile     'org.springframework.boot:spring-boot-starter-jetty'
+	compile     'org.springframework.boot:spring-boot-starter-jdbc'
 	compile     'org.springframework.boot:spring-boot-starter-security'
 	runtime     'org.webjars:angularjs:1.5.8'
 	runtime     'org.webjars:bootstrap:3.3.4'
 	runtime     'org.webjars:webjars-locator:0.32'
+	runtime     'org.postgresql:postgresql:9.4.1211.jre7'
+	runtime     'org.hsqldb:hsqldb:2.3.4'
 	testCompile 'org.spockframework:spock-core:1.1-groovy-2.4-rc-2'
 	testCompile 'org.spockframework:spock-spring:1.1-groovy-2.4-rc-2'
 	testCompile 'org.springframework.boot:spring-boot-starter-test'
@@ -61,5 +64,6 @@ dependencies {
 
 bootRun {
 	addResources = true // Reload static resources live
+	systemProperty 'spring.profiles.active', System.properties['spring.profiles.active']
 }
 

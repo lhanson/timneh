@@ -1,5 +1,19 @@
-# Configuration for local development
+# Default configuration for local development
+server:
+    port: 8081
 
 logging:
   level:
     io.github.lhanson: TRACE
+
+---
+
+# Local profile, uses PostgreSQL but starts from scratch each time
+spring:
+  profiles: local
+  datasource:
+    platform: postgresql-from-scratch
+    url: jdbc:postgresql:postgres
+    username: postgres
+    password:
+    driver-class-name: org.postgresql.Driver
