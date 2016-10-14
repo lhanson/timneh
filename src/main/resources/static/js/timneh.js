@@ -38,7 +38,7 @@ angular.module('timneh', [ 'ngRoute' ])
 		var authenticate = function(credentials, callback) {
 			console.log("Authenticating");
 			var headers = credentials
-				? {authorization : "Basic " + btoa(credentials.username + ":" + credentials.password) }
+				? { Authorization : "Basic " + btoa(credentials.username + ":" + credentials.password) }
 				: {};
 
 			$http.get('user', {headers : headers}).then(function(response) {

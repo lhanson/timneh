@@ -19,7 +19,7 @@ class IndexTest extends Specification {
 					.andReturn()
 
 		then:
-			200 == result.response.status
+			result.response.status == 200
 			result.response.contentAsString.contains '<title>Timneh</title>'
 	}
 
