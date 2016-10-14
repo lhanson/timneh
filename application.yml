@@ -9,11 +9,12 @@ logging:
 ---
 
 # Local profile, uses PostgreSQL but starts from scratch each time
+# Assumes the database has been set up ala docker/postgresql/init-db.sh
 spring:
   profiles: local
   datasource:
     platform: postgresql-from-scratch
-    url: jdbc:postgresql:postgres
-    username: postgres
+    url: jdbc:postgresql:timneh
+    username: timneh
     password:
     driver-class-name: org.postgresql.Driver
