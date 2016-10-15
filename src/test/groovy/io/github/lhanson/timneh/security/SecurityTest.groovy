@@ -10,6 +10,8 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
 import spock.lang.Specification
 
+import java.sql.Timestamp
+
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
@@ -65,7 +67,7 @@ class SecurityTest extends Specification {
 
 	def "Authenticated user can access user information"() {
 		given:
-			UserDetails userDetails = new UserDetails(1, 'username', 'Firstname M. Lastname', 'password', 'email@domain.tld', [])
+			UserDetails userDetails = new UserDetails(1, 'username', 'Firstname M. Lastname', 'password', 'email@domain.tld', new Timestamp(new Date().time), [])
 
 		when:
 			def result = mvc

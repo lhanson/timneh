@@ -5,11 +5,12 @@
 drop table if exists authorities cascade;
 drop table if exists users cascade;
 
-create table users(
+create table users (
   id serial not null primary key,
   username citext not null unique,
   password varchar(200) not null,
-  enabled boolean not null
+  enabled boolean not null,
+  created timestamp not null default current_timestamp
 );
 
 create table authorities (
