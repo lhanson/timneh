@@ -1,5 +1,6 @@
 package io.github.lhanson.timneh.config
 
+import io.github.lhanson.timneh.security.UserDetailsService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -49,7 +50,11 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
 	void configureGlobal(AuthenticationManagerBuilder auth,
 	                     Environment environment,
 	                     DataSource dataSource,
-	                     PasswordEncoder passwordEncoder) throws Exception {
+	                     PasswordEncoder passwordEncoder,
+	                     UserDetailsService userDetailsService) throws Exception {
+		auth
+				.userDetailsService(userDetailsService)
+				.passwordEncoder(passwordEncoder)
 		if (environment.activeProfiles.size() == 0) {
 			auth
 					.inMemoryAuthentication()
@@ -59,7 +64,6 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
 		} else {
 			auth
 					.jdbcAuthentication()
-					.passwordEncoder(passwordEncoder)
 					.dataSource(dataSource)
 		}
 	}

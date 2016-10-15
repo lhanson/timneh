@@ -1,5 +1,6 @@
 package io.github.lhanson.timneh.security
 
+import io.github.lhanson.timneh.domain.UserDetails
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc
 import org.springframework.boot.test.context.SpringBootTest
@@ -10,8 +11,8 @@ import org.springframework.web.context.WebApplicationContext
 import spock.lang.Specification
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -48,15 +49,34 @@ class SecurityTest extends Specification {
 			result.response.status == 403
 	}
 
-	def "Correct login password results in HTTP redirect"() {
+	def "Correct login password results in successful response"() {
+		given:
+			UserDetails userDetails = new UserDetails('username', 'password', [])
+
 		when:
 			def result = mvc
 					.perform(get("/user")
-						.with(user("user"))
-			)
+						.with(user(userDetails)))
 					.andReturn()
 
 		then:
+			result.response.status == 200
+	}
+
+	def "Authenticated user can access user information"() {
+		given:
+			UserDetails userDetails = new UserDetails('username', 'Firstname M. Lastname', 'password', 'email@domain.tld', [])
+
+		when:
+			def result = mvc
+					.perform(get("/user")
+						.with(user(userDetails)))
+					.andReturn()
+
+		then:
+			result.response.contentAsString.contains 'username'
+			result.response.contentAsString.contains 'Firstname M. Lastname'
+			result.response.contentAsString.contains 'email@domain.tld'
 			result.response.status == 200
 	}
 
