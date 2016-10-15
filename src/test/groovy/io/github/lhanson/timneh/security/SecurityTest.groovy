@@ -65,7 +65,7 @@ class SecurityTest extends Specification {
 
 	def "Authenticated user can access user information"() {
 		given:
-			UserDetails userDetails = new UserDetails('username', 'Firstname M. Lastname', 'password', 'email@domain.tld', [])
+			UserDetails userDetails = new UserDetails(1, 'username', 'Firstname M. Lastname', 'password', 'email@domain.tld', [])
 
 		when:
 			def result = mvc

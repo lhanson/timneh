@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.User
  * Extension of Spring Security's {@link User} to include domain-specific fields
  */
 class UserDetails extends User {
+	int id = -1
 	String fullName
 	String emailAddress
 
@@ -14,8 +15,9 @@ class UserDetails extends User {
 		super(username, password, authorities)
 	}
 
-	UserDetails(String username, String fullName, String password, String emailAddress, Collection<? extends GrantedAuthority> authorities) {
+	UserDetails(int id, String username, String fullName, String password, String emailAddress, Collection<? extends GrantedAuthority> authorities) {
 		super(username, password, authorities)
+		this.id = id
 		this.fullName = fullName
 		this.emailAddress = emailAddress
 	}

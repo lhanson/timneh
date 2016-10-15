@@ -6,13 +6,15 @@ drop table if exists authorities cascade;
 drop table if exists users cascade;
 
 create table users(
-  username citext not null primary key,
+  id serial not null primary key,
+  username citext not null unique,
   password varchar(200) not null,
-  enabled boolean not null);
+  enabled boolean not null
+);
 
 create table authorities (
-  username citext not null,
+  id integer not null,
   authority varchar(50) not null,
-  constraint fk_authorities_users foreign key(username) references users(username)
+  constraint fk_authorities_users foreign key(id) references users(id)
 );
-create unique index ix_auth_username on authorities (username,authority);
+create unique index ix_auth_id on authorities (id,authority);

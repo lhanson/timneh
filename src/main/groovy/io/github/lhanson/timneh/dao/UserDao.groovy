@@ -12,8 +12,14 @@ class UserDao {
 	Logger log = LoggerFactory.getLogger(this.class)
 	@Autowired JdbcTemplate jdbcTemplate
 
+	UserDetails loadUserById(String username) {
+		log.trace "Loading user data for user '$username'"
+		new UserDetails(1, 'test_username', 'Firstname Lastname', 'test_password', 'email@foo.com', [])
+	}
+
 	UserDetails loadUserByUsername(String username) {
 		log.trace "Loading user data for user '$username'"
-		new UserDetails('test_username', 'Firstname Lastname', 'test_password', 'email@foo.com', [])
+		new UserDetails(1, 'test_username', 'Firstname Lastname', 'test_password', 'email@foo.com', [])
 	}
+
 }
