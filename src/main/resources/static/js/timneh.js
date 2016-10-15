@@ -43,8 +43,8 @@ angular.module('timneh', [ 'ngRoute' ])
 
 			$http.get('user', {headers : headers}).then(function(response) {
 				console.log('GET /user, response:', response);
-				if (response.data.name) {
-					userService.username = response.data.name;
+				if (response.data.username) {
+					userService.username = response.data.username;
 					userService.authenticated = true;
 					$rootScope.authenticated = true;
 				} else {
