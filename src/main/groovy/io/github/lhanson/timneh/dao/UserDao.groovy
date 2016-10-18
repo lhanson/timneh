@@ -5,25 +5,55 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Repository
-
-import java.sql.Timestamp
 
 @Repository
 class UserDao {
 	Logger log = LoggerFactory.getLogger(this.class)
 	@Autowired JdbcTemplate jdbcTemplate
 
-	UserDetails loadUserById(String username) {
-		log.trace "Loading user data for user '$username'"
-		// TODO: actually load
-		new UserDetails(1, 'test_username', 'Firstname Lastname', 'test_password', 'email@foo.com', new Timestamp(new Date().time), [])
+	UserDetails loadUserById(int id) {
+		log.trace "Loading user data for user '$id'"
+		Map result = jdbcTemplate.queryForMap("""
+				select users.*, string_agg(authority, ',') authorities
+				from users users
+				join authorities auth
+				  on users.id = auth.id
+				where users.id= :id
+				group by users.id""", [id: id])
+		mapUserDetails(result)
 	}
 
 	UserDetails loadUserByUsername(String username) {
 		log.trace "Loading user data for user '$username'"
-		// TODO: actually load
-		new UserDetails(1, 'test_username', 'Firstname Lastname', 'test_password', 'email@foo.com', new Timestamp(new Date().time), [])
+		Map result = jdbcTemplate.queryForMap("""
+				select users.*, string_agg(authority, ',') authorities
+				from users users
+				join authorities auth
+				  on users.id = auth.id
+				where users.username = :username
+				group by users.id""", [username: username]);
+		mapUserDetails(result)
+	}
+
+	UserDetails mapUserDetails(Map m) {
+		new UserDetails(
+				m.id,
+				m.username,
+				m.fullName,
+				m.password,
+				m.email_address,
+				m.created,
+				tokenizeAuthorities(m.authorities)
+		)
+	}
+
+	List<GrantedAuthority> tokenizeAuthorities(String authorities) {
+		authorities
+				.tokenize(',')
+				.collect { new SimpleGrantedAuthority(it) }
 	}
 
 }

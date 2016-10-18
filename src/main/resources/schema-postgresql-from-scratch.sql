@@ -10,7 +10,9 @@ create table users (
   id serial not null primary key,
   username citext not null unique,
   password varchar(200) not null,
-  enabled boolean not null,
+  full_name varchar(200) not null,
+  email citext not null unique,
+  enabled boolean not null default true,
   created timestamp not null default current_timestamp
 );
 

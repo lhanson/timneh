@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository
 
 import javax.annotation.PostConstruct
 
+import static io.github.lhanson.timneh.Util.lowercaseKeys
+
 @Repository
 class DiscussionDao {
 	Logger log = LoggerFactory.getLogger(this.class)
@@ -43,11 +45,4 @@ class DiscussionDao {
 		insertDiscussion.execute([author_id: authorId, title: title])
 	}
 
-	private Map lowercaseKeys(Map m) {
-		Map result = [:]
-		m.keySet().each { key ->
-			result[key.toLowerCase()] = m[key]
-		}
-		result
-	}
 }

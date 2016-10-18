@@ -6,6 +6,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert
 import spock.lang.Specification
 
+import static io.github.lhanson.timneh.TestUtil.asMap
+
 class DiscussionDaoTest extends Specification {
 	DiscussionDao discussionDao
 	JdbcTemplate jdbcTemplate
@@ -50,13 +52,6 @@ class DiscussionDaoTest extends Specification {
 
 		then:
 			rowsAffected == 1
-	}
-
-	// For a given Object, return its properties as a map
-	def asMap(Object o) {
-		o.class.declaredFields.findAll { !it.synthetic }.collectEntries {
-			[(it.name): o."$it.name"]
-		}
 	}
 
 }
