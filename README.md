@@ -1,4 +1,5 @@
-# timneh [![Build Status](https://travis-ci.org/lhanson/timneh.svg?branch=master)](https://travis-ci.org/lhanson/timneh)
+# timneh [![Build Status](https://travis-ci.org/lhanson/timneh.svg?branch=master)](https://travis-ci.org/lhanson/timneh) [![codecov](https://codecov.io/gh/lhanson/timneh/branch/master/graph/badge.svg)](https://codecov.io/gh/lhanson/timneh)
+
 A squawky, dusty discussion forum for zygodactyl cringelords
 
 ## Testing
