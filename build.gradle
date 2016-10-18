@@ -57,10 +57,12 @@ dependencies {
 	runtime     'org.webjars:webjars-locator:0.32'
 	runtime     'org.postgresql:postgresql:9.4.1211'
 	runtime     'org.hsqldb:hsqldb:2.3.4'
+	testCompile 'cglib:cglib-nodep:2.2' // Allow mocking of non-interface types
 	testCompile 'org.spockframework:spock-core:1.1-groovy-2.4-rc-2'
 	testCompile 'org.spockframework:spock-spring:1.1-groovy-2.4-rc-2'
 	testCompile 'org.springframework.boot:spring-boot-starter-test'
 	testCompile 'org.springframework.security:spring-security-test'
+
 }
 
 bootRun {
@@ -68,3 +70,15 @@ bootRun {
 	systemProperty 'spring.profiles.active', System.properties['spring.profiles.active']
 }
 
+processResources << {
+	// If we're using HSQLDB (i.e., no Spring profile specified), prepend the
+	// HSQLDB setup commands before the main DDL statements.
+	if (!System.getProperty('spring.profiles.active')) {
+		(new File("$buildDir/resources/main/schema.sql")).text =
+				file("src/main/resources/hsqldb-header.sql").getText() +
+				file("src/main/resources/schema-postgresql-from-scratch.sql").getText()
+		(new File("$buildDir/resources/main/data.sql")).text =
+				file("src/main/resources/hsqldb-header.sql").getText() +
+				file("src/main/resources/data-postgresql-from-scratch.sql").getText()
+	}
+}

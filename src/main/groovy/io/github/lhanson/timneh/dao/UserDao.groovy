@@ -16,11 +16,13 @@ class UserDao {
 
 	UserDetails loadUserById(String username) {
 		log.trace "Loading user data for user '$username'"
+		// TODO: actually load
 		new UserDetails(1, 'test_username', 'Firstname Lastname', 'test_password', 'email@foo.com', new Timestamp(new Date().time), [])
 	}
 
 	UserDetails loadUserByUsername(String username) {
 		log.trace "Loading user data for user '$username'"
+		// TODO: actually load
 		new UserDetails(1, 'test_username', 'Firstname Lastname', 'test_password', 'email@foo.com', new Timestamp(new Date().time), [])
 	}
 

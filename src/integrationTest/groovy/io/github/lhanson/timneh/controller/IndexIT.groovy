@@ -10,15 +10,15 @@ import spock.lang.Specification
 class IndexIT extends Specification {
 	@Autowired TestRestTemplate template
 	@LocalServerPort int port
-	URL base
+	String baseUrl
 
 	def setup() {
-		base = new URL("http://localhost:$port/")
+		baseUrl = "http://localhost:$port/"
 	}
 
 	def "get index"() {
 		when:
-			def response = template.getForEntity(base.toString(), String)
+			def response = template.getForEntity(baseUrl, String)
 
 		then:
 			response.body.contains "<title>Timneh</title>"
