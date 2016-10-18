@@ -1,4 +1,4 @@
-# timneh [![Build Status](https://travis-ci.org/lhanson/timneh.svg?branch=master)](https://travis-ci.org/lhanson/timneh) [![codecov](https://codecov.io/gh/lhanson/timneh/branch/master/graph/badge.svg)](https://codecov.io/gh/lhanson/timneh) [![Dependency Status](https://www.versioneye.com/user/projects/58012e8fa23d520045b212c5/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/58012e8fa23d520045b212c5)
+# timneh [![Build Status](https://travis-ci.org/lhanson/timneh.svg?branch=master)](https://travis-ci.org/lhanson/timneh) [![codecov](https://codecov.io/gh/lhanson/timneh/branch/master/graph/badge.svg)](https://codecov.io/gh/lhanson/timneh) [![Dependency Status](https://www.versioneye.com/user/projects/58012e8fa23d520045b212c5/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/58012e8fa23d520045b212c5) [![Dependency Status](https://dependencyci.com/github/lhanson/timneh/badge)](https://dependencyci.com/github/lhanson/timneh)
 
 A squawky, dusty discussion forum for zygodactyl cringelords
 
