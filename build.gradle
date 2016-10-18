@@ -12,6 +12,7 @@ buildscript {
 
 apply plugin: 'groovy'
 apply plugin: 'spring-boot'
+apply plugin: 'jacoco'
 
 jar {
 	baseName = 'timneh'
@@ -82,3 +83,11 @@ processResources << {
 				file("src/main/resources/data-postgresql-from-scratch.sql").getText()
 	}
 }
+
+jacocoTestReport {
+	reports {
+		xml.enabled = true
+		html.enabled = true
+	}
+}
+check.dependsOn jacocoTestReport
