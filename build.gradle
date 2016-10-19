@@ -76,10 +76,10 @@ processResources << {
 	// HSQLDB setup commands before the main DDL statements.
 	if (!System.getProperty('spring.profiles.active')) {
 		(new File("$buildDir/resources/main/schema.sql")).text =
-				file("src/main/resources/hsqldb-header.sql").getText() +
+				file("src/main/resources/header-hsqldb.sql").getText() +
 				file("src/main/resources/schema-postgresql-from-scratch.sql").getText()
 		(new File("$buildDir/resources/main/data.sql")).text =
-				file("src/main/resources/hsqldb-header.sql").getText() +
+				file("src/main/resources/header-hsqldb.sql").getText() +
 				file("src/main/resources/data-postgresql-from-scratch.sql").getText()
 	}
 }
