@@ -12,13 +12,14 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 
-install: docker/postgresql/build_run.sh
+install: docker/postgresql/build_run.sh 6666
 
 script:
   # Test using in-memory HSQLDB
   - gradle integrationTest
-  # Test with a dockerized PostgreSQL
-  - gradle integrationTest -Dspring.profiles.active=local
+  # Test with a dockerized PostgreSQL (need to remap the port
+  # because of https://github.com/travis-ci/travis-ci/issues/4744)
+  - gradle integrationTest -Dspring.profiles.active=local,travis
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

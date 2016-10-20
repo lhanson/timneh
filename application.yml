@@ -18,3 +18,13 @@ spring:
     username: timneh
     password:
     driver-class-name: org.postgresql.Driver
+
+---
+
+# Profile for running on Travis CI, where we'll be using a dockerized
+# instance of PostgreSQL, but need to work around the inability to
+# use port 5432 (https://github.com/travis-ci/travis-ci/issues/4842)
+spring:
+  profiles: travis-ci
+  datasource:
+    port: 6666
