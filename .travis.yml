@@ -16,7 +16,7 @@ install: docker/postgresql/build_run.sh 6666
 
 script:
   # Test using in-memory HSQLDB
-#  - gradle integrationTest
+  - gradle integrationTest
   # Test with a dockerized PostgreSQL (need to remap the port
   # because of https://github.com/travis-ci/travis-ci/issues/4744)
   - gradle -d integrationTest -Dspring.profiles.active=travis-ci
