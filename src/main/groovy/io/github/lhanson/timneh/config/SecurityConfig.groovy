@@ -35,7 +35,7 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
-	@Profile(['default', 'local'])
+	@Profile(['default', 'local', 'travis-ci'])
 	public PasswordEncoder noopPasswordEncoder() {
 		new NoOpPasswordEncoder()
 	}

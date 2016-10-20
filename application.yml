@@ -2,6 +2,10 @@
 server:
     port: 8081
 
+spring:
+  datasource:
+    username: timneh
+
 logging:
   level:
     io.github.lhanson: TRACE
@@ -14,10 +18,8 @@ spring:
   profiles: local
   datasource:
     platform: postgresql-from-scratch
-    url: jdbc:postgresql:timneh
-    username: timneh
-    password:
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/timneh
+
 
 ---
 
@@ -28,4 +30,4 @@ spring:
   profiles: travis-ci
   datasource:
     platform: postgresql-from-scratch
-    port: 6666
+    url: jdbc:postgresql://localhost:6666/timneh
