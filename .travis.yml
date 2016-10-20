@@ -1,3 +1,4 @@
+sudo: required # for Docker
 language: groovy
 jdk: oraclejdk8
 
@@ -8,7 +9,13 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 
-script: gradle check integrationTest
+install: docker/postgresql/build_run.sh
+
+script:
+  # Test using in-memory HSQLDB
+  - gradle integrationTest
+  # Test with a dockerized PostgreSQL
+  - gradle integrationTest -Dspring.profiles.active=local
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
