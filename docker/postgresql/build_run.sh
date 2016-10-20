@@ -3,4 +3,4 @@
 
 set -e
 docker build --tag timneh-postgresql docker/postgresql
-docker run --publish 9876:5432 --rm timneh-postgresql
+docker run --detach --publish 6666:5432 timneh-postgresql
