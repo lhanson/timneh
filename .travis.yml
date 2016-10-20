@@ -12,12 +12,6 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 
-before_install:
-  - sudo apt-get update
-  - sudo apt-get purge lxc-docker*
-  - curl -fsSL https://get.docker.com/ | sh
-#  - sudo apt-get install apt-transport-https ca-certificates
-#  - sudo apt-get install lxc-docker
 install: docker/postgresql/build_run.sh
 
 script:
