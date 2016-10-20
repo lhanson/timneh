@@ -14,6 +14,7 @@ cache:
 
 before_install:
   - sudo apt-get update
+  - sudo apt-get install apt-transport-https ca-certificates
   - sudo apt-get install lxc-docker
 install: docker/postgresql/build_run.sh
 
