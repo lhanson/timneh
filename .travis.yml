@@ -19,7 +19,8 @@ script:
   - gradle integrationTest
   # Test with a dockerized PostgreSQL (need to remap the port
   # because of https://github.com/travis-ci/travis-ci/issues/4744)
-  - gradle -d integrationTest -Dspring.profiles.active=local,travis
+  - gradle -d clean integrationTest -Dspring.profiles.active=local,travis
 
 after_success:
+  # Install codeconv code coverage integration
   - bash <(curl -s https://codecov.io/bash)
