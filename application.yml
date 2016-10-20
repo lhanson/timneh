@@ -27,4 +27,5 @@ spring:
 spring:
   profiles: travis-ci
   datasource:
+    platform: postgresql-from-scratch
     port: 6666
