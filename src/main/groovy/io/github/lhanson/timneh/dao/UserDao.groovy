@@ -4,50 +4,47 @@ import io.github.lhanson.timneh.domain.UserDetails
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.core.RowMapper
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Repository
 
+import java.sql.ResultSet
+import java.sql.SQLException
+import java.sql.Timestamp
+
 @Repository
 class UserDao {
 	Logger log = LoggerFactory.getLogger(this.class)
-	@Autowired JdbcTemplate jdbcTemplate
+	@Autowired NamedParameterJdbcTemplate namedParameterJdbcTemplate
+	@Autowired Map databaseQueries
 
 	UserDetails loadUserById(int id) {
 		log.trace "Loading user data for user '$id'"
-		Map result = jdbcTemplate.queryForMap("""
-				select users.*, string_agg(authority, ',') authorities
-				from users users
-				join authorities auth
-				  on users.id = auth.id
-				where users.id= :id
-				group by users.id""", [id: id])
-		mapUserDetails(result)
+		namedParameterJdbcTemplate.queryForObject(
+				databaseQueries['loadUserById'], [id: id], new UserDetailsRowMapper())
 	}
 
 	UserDetails loadUserByUsername(String username) {
 		log.trace "Loading user data for user '$username'"
-		Map result = jdbcTemplate.queryForMap("""
-				select users.*, string_agg(authority, ',') authorities
-				from users users
-				join authorities auth
-				  on users.id = auth.id
-				where users.username = :username
-				group by users.id""", [username: username]);
-		mapUserDetails(result)
+		namedParameterJdbcTemplate.queryForObject(
+				databaseQueries['loadUserByUsername'], [username: username], new UserDetailsRowMapper())
 	}
 
-	UserDetails mapUserDetails(Map m) {
-		new UserDetails(
-				m.id,
-				m.username,
-				m.fullName,
-				m.password,
-				m.email_address,
-				m.created,
-				tokenizeAuthorities(m.authorities)
-		)
+	class UserDetailsRowMapper implements RowMapper<UserDetails> {
+		@Override
+		UserDetails mapRow(ResultSet rs, int rowNum) throws SQLException {
+			new UserDetails(
+					1,
+					'user',
+					'first last',
+					'password',
+					'user@domain.tld',
+					new Timestamp(new Date().time),
+					[new SimpleGrantedAuthority('USER')]
+			)
+		}
 	}
 
 	List<GrantedAuthority> tokenizeAuthorities(String authorities) {

@@ -1,7 +1,7 @@
 package io.github.lhanson.timneh.dao
 
 import io.github.lhanson.timneh.domain.UserDetails
-import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import spock.lang.Specification
 
@@ -9,26 +9,20 @@ import java.sql.Timestamp
 
 class UserDaoTest extends Specification {
 	UserDao userDao
-	JdbcTemplate jdbcTemplate
-	def jdbcResult
+	NamedParameterJdbcTemplate namedParameterJdbcTemplate
+	UserDetails jdbcResult
 
 	def setup() {
-		jdbcTemplate = Mock()
-		userDao = new UserDao(jdbcTemplate: jdbcTemplate)
-		jdbcResult = [
-				id: 1,
-				username: 'username',
-				password: '12345',
-				full_name: 'First Last',
-				email: 'user@domain.tld',
-				enabled: true,
-				created: new Timestamp(new Date().time),
-				authorities: 'TEST_USER']
+		namedParameterJdbcTemplate = Mock()
+		userDao = new UserDao(namedParameterJdbcTemplate: namedParameterJdbcTemplate, databaseQueries: [:])
+		jdbcResult = new UserDetails(
+				1, 'username', 'First Last', 'password', 'user@domain.tld', new Timestamp(new Date().time),
+				[new SimpleGrantedAuthority('TEST_USER')])
 	}
 
 	def "loadUserById returns the correct result"() {
 		given:
-			1 * jdbcTemplate.queryForMap(_, _) >> jdbcResult
+			1 * namedParameterJdbcTemplate.queryForObject(_, _, _) >> jdbcResult
 
 		when:
 			UserDetails user = userDao.loadUserById(jdbcResult.id)
@@ -40,15 +34,15 @@ class UserDaoTest extends Specification {
 			user.fullName     == jdbcResult.fullName
 			user.emailAddress == jdbcResult.emailAddress
 			user.created      == jdbcResult.created
-			// The JDBC result set is a delimited string, so verify that
-			// it gets mapped into the proper collection
-			user.authorities.toList() == userDao.tokenizeAuthorities(jdbcResult.authorities)
+			user.authorities.toList() == jdbcResult.authorities.toList()
 	}
 
 	def "loadUserById with multiple authorities"() {
 		given:
-			jdbcResult.authorities = 'TEST_USER,TEST_ADMIN'
-			1 * jdbcTemplate.queryForMap(_, _) >> jdbcResult
+			jdbcResult = new UserDetails(
+					1, 'username', 'First Last', 'password', 'user@domain.tld', new Timestamp(new Date().time),
+					[new SimpleGrantedAuthority('TEST_USER'), new SimpleGrantedAuthority('TEST_ADMIN')])
+			1 * namedParameterJdbcTemplate.queryForObject(_, _, _) >> jdbcResult
 
 		when:
 			UserDetails user = userDao.loadUserById(jdbcResult.id)
@@ -60,7 +54,7 @@ class UserDaoTest extends Specification {
 
 	def "loadUserByUsername returns the correct result"() {
 		given:
-			1 * jdbcTemplate.queryForMap(_, _) >> jdbcResult
+			1 * namedParameterJdbcTemplate.queryForObject(_, _, _) >> jdbcResult
 
 		when:
 			UserDetails user = userDao.loadUserByUsername(jdbcResult.username)
@@ -72,9 +66,7 @@ class UserDaoTest extends Specification {
 			user.fullName     == jdbcResult.fullName
 			user.emailAddress == jdbcResult.emailAddress
 			user.created      == jdbcResult.created
-			// The JDBC result set is a delimited string, so verify that
-			// it gets mapped into the proper collection
-			user.authorities.toList() == userDao.tokenizeAuthorities(jdbcResult.authorities)
+			user.authorities.toList() == jdbcResult.authorities.toList()
 	}
 
 }

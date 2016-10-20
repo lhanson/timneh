@@ -1,6 +1,5 @@
 package io.github.lhanson.timneh.controller
 
-import io.github.lhanson.timneh.domain.Discussion
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.embedded.LocalServerPort
 import org.springframework.boot.test.context.SpringBootTest
@@ -20,7 +19,7 @@ class DiscussionIT extends Specification {
 	def "get discussions"() {
 		when:
 			def response = template
-					.withBasicAuth('test_username', 'test_password')
+					.withBasicAuth('user', 'password')
 					.getForEntity(baseUrl, String)
 
 		then:
@@ -30,7 +29,7 @@ class DiscussionIT extends Specification {
 	def "get discussion by ID"() {
 		when:
 			def response = template
-					.withBasicAuth('test_username', 'test_password')
+					.withBasicAuth('user', 'password')
 					.getForEntity("$baseUrl/1", String)
 
 		then:
@@ -43,7 +42,7 @@ class DiscussionIT extends Specification {
 			Discussion newDiscussion = new Discussion(title: 'New Discussion')
 		when:
 			def response = template
-					.withBasicAuth('test_username', 'test_password')
+					.withBasicAuth('user', 'password')
 					.postForEntity(baseUrl, newDiscussion, Discussion, [:])
 			println "Got response $response"
 

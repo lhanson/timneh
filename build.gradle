@@ -37,8 +37,10 @@ task integrationTest(type: Test) {
 	description = "Runs Integration Tests"
 	testClassesDir = sourceSets.integrationTest.output.classesDir
 	classpath = sourceSets.integrationTest.runtimeClasspath
+	dependsOn processResources
+	dependsOn test
+	systemProperty 'spring.profiles.active', System.properties['spring.profiles.active']
 }
-integrationTest.dependsOn test
 
 repositories {
 	mavenCentral()
@@ -63,12 +65,10 @@ dependencies {
 	testCompile 'org.spockframework:spock-spring:1.1-groovy-2.4-rc-2'
 	testCompile 'org.springframework.boot:spring-boot-starter-test'
 	testCompile 'org.springframework.security:spring-security-test'
-
 }
 
 bootRun {
 	addResources = true // Reload static resources live
-	systemProperty 'spring.profiles.active', System.properties['spring.profiles.active']
 }
 
 processResources << {
