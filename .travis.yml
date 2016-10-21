@@ -16,10 +16,10 @@ install: docker/postgresql/build_run.sh 6666
 
 script:
   # Test using in-memory HSQLDB
-  - gradle integrationTest
+  - gradle check
   # Test with a dockerized PostgreSQL (need to remap the port
   # because of https://github.com/travis-ci/travis-ci/issues/4744)
-  - gradle integrationTest -Dspring.profiles.active=travis-ci
+  - gradle check -Dspring.profiles.active=travis-ci
 
 after_success:
   # Install codeconv code coverage integration

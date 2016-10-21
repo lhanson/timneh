@@ -90,4 +90,7 @@ jacocoTestReport {
 		html.enabled = true
 	}
 }
-check.dependsOn jacocoTestReport
+
+check.dependsOn clean // Clean profile-specific DDL we may have generated
+check.dependsOn integrationTest
+check.dependsOn jacocoTestReport // Code coverage
