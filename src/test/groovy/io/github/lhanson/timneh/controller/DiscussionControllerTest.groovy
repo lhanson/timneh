@@ -2,6 +2,11 @@ package io.github.lhanson.timneh.controller
 
 import io.github.lhanson.timneh.dao.DiscussionDao
 import io.github.lhanson.timneh.domain.Discussion
+import io.github.lhanson.timneh.domain.UserDetails
+import org.springframework.http.ResponseEntity
+import org.springframework.http.HttpStatus
+import org.springframework.security.authentication.TestingAuthenticationToken
+import org.springframework.web.util.UriComponentsBuilder
 import spock.lang.Specification
 
 class DiscussionControllerTest extends Specification {
@@ -47,6 +52,25 @@ class DiscussionControllerTest extends Specification {
 
 		then:
 			discussion == null
+	}
+
+	def "create discussion returns the ID of the newly created discussion"() {
+		given:
+			def userId = 12
+			def newDiscussionId = 432
+			UserDetails testUser = new UserDetails('username', 'password', [])
+			testUser.id = userId
+			1 * discussionDao.create(userId, 'New Discussion') >> newDiscussionId
+
+		when:
+			ResponseEntity result = discussionController.createDiscussion(
+					'New Discussion',
+					new TestingAuthenticationToken(testUser, null),
+					new UriComponentsBuilder())
+
+		then:
+			result.statusCode == HttpStatus.CREATED
+			result.headers['Location'] == ["/discussions/$newDiscussionId"]
 	}
 
 }

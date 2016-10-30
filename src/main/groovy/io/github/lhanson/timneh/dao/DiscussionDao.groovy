@@ -22,7 +22,9 @@ class DiscussionDao {
 
 	@PostConstruct
 	void init() {
-		insertDiscussion = new SimpleJdbcInsert(jdbcTemplate.dataSource).withTableName('discussions')
+		insertDiscussion = new SimpleJdbcInsert(jdbcTemplate.dataSource)
+				.withTableName('discussions')
+				.usingGeneratedKeyColumns('id')
 	}
 
 	List<Discussion> loadAll() {
@@ -42,7 +44,7 @@ class DiscussionDao {
 
 	int create(int authorId, String title) {
 		log.trace "Creating discussion named $title for $authorId"
-		insertDiscussion.execute([author_id: authorId, title: title])
+		insertDiscussion.executeAndReturnKey([author_id: authorId, title: title])
 	}
 
 }

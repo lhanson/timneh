@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.embedded.LocalServerPort
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
+import org.springframework.http.HttpEntity
+import org.springframework.http.ResponseEntity
+import org.springframework.util.LinkedMultiValueMap
 import spock.lang.Specification
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -14,13 +17,12 @@ class DiscussionIT extends Specification {
 
 	def setup() {
 		baseUrl = "http://localhost:$port/discussions"
+		template = template.withBasicAuth('user', 'password')
 	}
 
 	def "get discussions"() {
 		when:
-			def response = template
-					.withBasicAuth('user', 'password')
-					.getForEntity(baseUrl, String)
+			def response = template.getForEntity(baseUrl, String)
 
 		then:
 			response.statusCodeValue == 200
@@ -28,27 +30,24 @@ class DiscussionIT extends Specification {
 
 	def "get discussion by ID"() {
 		when:
-			def response = template
-					.withBasicAuth('user', 'password')
-					.getForEntity("$baseUrl/1", String)
+			def response = template.getForEntity("$baseUrl/1", String)
 
 		then:
 			response.statusCodeValue == 200
 	}
 
-	/* TODO: Research using POST with Spring Security
 	def "create discussion"() {
 		given:
-			Discussion newDiscussion = new Discussion(title: 'New Discussion')
+			HttpEntity request = new HttpEntity(
+					"Integration Test Discussion",
+					new LinkedMultiValueMap<String, String>(['Content-Type': ['application/json']]))
+
 		when:
-			def response = template
-					.withBasicAuth('user', 'password')
-					.postForEntity(baseUrl, newDiscussion, Discussion, [:])
-			println "Got response $response"
+			ResponseEntity response = template.postForEntity(baseUrl, request, null)
 
 		then:
-			false
+			response.statusCodeValue == 201
+			response.getHeaders().get('Location')
 	}
-	*/
 
 }

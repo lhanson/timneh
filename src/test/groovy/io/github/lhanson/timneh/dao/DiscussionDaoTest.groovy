@@ -46,12 +46,12 @@ class DiscussionDaoTest extends Specification {
 	def "create"() {
 		given:
 			discussionDao.insertDiscussion = Mock(SimpleJdbcInsert)
-			1 * discussionDao.insertDiscussion.execute(_) >> 1
+			1 * discussionDao.insertDiscussion.executeAndReturnKey(_) >> 432
 		when:
-			def rowsAffected = discussionDao.create(1, 'Title')
+			def newDiscussionId = discussionDao.create(1, 'Title')
 
 		then:
-			rowsAffected == 1
+			newDiscussionId == 432
 	}
 
 }

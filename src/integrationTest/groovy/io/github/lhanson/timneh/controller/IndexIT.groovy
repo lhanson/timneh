@@ -16,11 +16,20 @@ class IndexIT extends Specification {
 		baseUrl = "http://localhost:$port/"
 	}
 
-	def "get index"() {
+	def "get root"() {
 		when:
 			def response = template.getForEntity(baseUrl, String)
 
 		then:
 			response.body.contains "<title>Timneh</title>"
 	}
+
+	def "get index partial"() {
+		when:
+			def response = template.getForEntity("$baseUrl/index.html", String)
+
+		then:
+			response.body.contains "<title>Timneh</title>"
+	}
+
 }

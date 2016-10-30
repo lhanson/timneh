@@ -28,21 +28,21 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.and()
 				.authorizeRequests()
 					.antMatchers('/', '/index.html', '/home.html', '/login.html').permitAll()
-					.anyRequest().authenticated()
+//					.anyRequest().authenticated()
 					.and()
 				.csrf()
-					.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
+					.disable()
 	}
 
 	@Bean
 	@Profile(['default', 'local', 'travis-ci'])
-	public PasswordEncoder noopPasswordEncoder() {
+	PasswordEncoder noopPasswordEncoder() {
 		new NoOpPasswordEncoder()
 	}
 
 	@Bean
 	@Profile('dev')
-	public PasswordEncoder bcryptPasswordEncoder() {
+	PasswordEncoder bcryptPasswordEncoder() {
 		new BCryptPasswordEncoder();
 	}
 
