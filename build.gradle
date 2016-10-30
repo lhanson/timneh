@@ -70,6 +70,7 @@ dependencies {
 bootRun {
 	addResources = true // Reload static resources live
 }
+bootRun.systemProperties = System.properties
 
 processResources << {
 	// If we're using HSQLDB (i.e., no Spring profile specified), prepend the
