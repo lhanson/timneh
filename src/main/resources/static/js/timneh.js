@@ -1,4 +1,4 @@
-angular.module('timneh', [ 'ngRoute'/*, 'ngStorage'*/ ])
+angular.module('timneh', [ 'ngRoute', 'ngStorage' ])
 
 	.config(function($routeProvider, $httpProvider) {
 		$routeProvider.when('/', {
@@ -11,33 +11,44 @@ angular.module('timneh', [ 'ngRoute'/*, 'ngStorage'*/ ])
 			controllerAs: 'controller'
 		}).otherwise('/');
 		$httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
+
+		$httpProvider.interceptors.push(['$q', '$location', '$localStorage', function ($q, $location, $localStorage) {
+			return {
+				'request': function (config) {
+					config.headers = config.headers || {};
+					if ($localStorage.token) {
+						config.headers.Authorization = 'Bearer ' + $localStorage.token;
+					}
+					return config;
+				},
+				'responseError': function (response) {
+					if (response.status === 401 || response.status === 403) {
+						$location.path('/signin');
+					}
+					return $q.reject(response);
+				}
+			};
+		}]);
 	})
 
-	.factory('userService', function() {
-		return { }
-	})
-
-	.controller('home', function($http, userService) {
+	.controller('home', ['$http', '$localStorage', '$scope', function($http, $localStorage, $scope) {
+		$scope.authenticated = $localStorage.token;
 		var self = this;
-		if (userService.token) {
+		if ($localStorage.token) {
 			$http.get('/now').then(function(response) {
 				self.localDateTime = response.data;
 			});
-			self.username = userService.username;
 		}
-	})
+	}])
 
-	.controller('navigation', function($rootScope, $http, $location, userService/*, $localStorage*/) {
+	.controller('navigation', function($rootScope, $http, $location, $localStorage, $scope, $route) {
 		var self = this;
 		var authenticate = function(credentials, callback) {
 			 $http.post('login', credentials)
 				.then(function(response) {
-					userService.token = response.data;
-					$rootScope.authenticated = (userService.token != undefined);
-					$http.defaults.headers.common.Authorization = 'Bearer ' + userService.token;
+					$localStorage.token = response.data;
 					callback && callback();
 				}, function() {
-					$rootScope.authenticated = false;
 					callback && callback();
 				});
 			};
@@ -45,7 +56,7 @@ angular.module('timneh', [ 'ngRoute'/*, 'ngStorage'*/ ])
 		self.credentials = {};
 		self.login = function() {
 			authenticate(self.credentials, function() {
-				if ($rootScope.authenticated) {
+				if ($localStorage.token) {
 					$location.path("/");
 					self.error = false;
 				} else {
@@ -55,8 +66,10 @@ angular.module('timneh', [ 'ngRoute'/*, 'ngStorage'*/ ])
 			});
 		};
 		self.logout = function() {
-			$rootScope.authenticated = false;
-			userService.token = null;
+			delete $localStorage.token;
 			$location.path("/");
+			$scope.authenticated = false;
+			$route.reload();
 		}
+		$scope.authenticated = $localStorage.token;
 	});
