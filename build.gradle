@@ -55,6 +55,7 @@ dependencies {
 	compile     'org.springframework.boot:spring-boot-starter-jetty'
 	compile     'org.springframework.boot:spring-boot-starter-jdbc'
 	compile     'org.springframework.boot:spring-boot-starter-security'
+	compile     'io.jsonwebtoken:jjwt:0.7.0'
 	runtime     'org.webjars:angularjs:1.5.8'
 	runtime     'org.webjars:bootstrap:3.3.7-1'
 	runtime     'org.webjars:webjars-locator:0.32'

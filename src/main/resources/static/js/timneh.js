@@ -1,63 +1,46 @@
-angular.module('timneh', [ 'ngRoute' ])
+angular.module('timneh', [ 'ngRoute'/*, 'ngStorage'*/ ])
 
 	.config(function($routeProvider, $httpProvider) {
-		console.log('Configuring AngularJS app');
 		$routeProvider.when('/', {
 			templateUrl : 'home.html',
 			controller : 'home',
 			controllerAs: 'controller'
 		}).when('/login', {
-			templateUrl : 'login.html',
+			templateUrl : 'loginForm.html',
 			controller : 'navigation',
 			controllerAs: 'controller'
 		}).otherwise('/');
-
 		$httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
 	})
 
 	.factory('userService', function() {
-		console.log('Creating userService');
-		var userServiceInstance = { };
-		return userServiceInstance;
+		return { }
 	})
 
 	.controller('home', function($http, userService) {
 		var self = this;
-		console.log('Creating home controller');
-		if (userService.authenticated) {
+		if (userService.token) {
 			$http.get('/now').then(function(response) {
 				self.localDateTime = response.data;
-			})
-			self.username = userService.username
+			});
+			self.username = userService.username;
 		}
 	})
 
-	.controller('navigation', function($rootScope, $http, $location, userService) {
+	.controller('navigation', function($rootScope, $http, $location, userService/*, $localStorage*/) {
 		var self = this;
-		console.log('Creating navigation controller');
 		var authenticate = function(credentials, callback) {
-			console.log("Authenticating");
-			var headers = credentials
-				? { Authorization : "Basic " + btoa(credentials.username + ":" + credentials.password) }
-				: {};
-
-			$http.get('user', {headers : headers}).then(function(response) {
-				console.log('GET /user, response:', response);
-				if (response.data.username) {
-					userService.username = response.data.username;
-					userService.authenticated = true;
-					$rootScope.authenticated = true;
-				} else {
+			 $http.post('login', credentials)
+				.then(function(response) {
+					userService.token = response.data;
+					$rootScope.authenticated = (userService.token != undefined);
+					$http.defaults.headers.common.Authorization = 'Bearer ' + userService.token;
+					callback && callback();
+				}, function() {
 					$rootScope.authenticated = false;
-				}
-				callback && callback();
-			}, function() {
-				$rootScope.authenticated = false;
-				callback && callback();
-			});
-		}
-
-		authenticate();
+					callback && callback();
+				});
+			};
 
 		self.credentials = {};
 		self.login = function() {
@@ -72,9 +55,8 @@ angular.module('timneh', [ 'ngRoute' ])
 			});
 		};
 		self.logout = function() {
-			$http.post('logout', {}).finally(function() {
-				$rootScope.authenticated = false;
-				$location.path("/");
-			});
+			$rootScope.authenticated = false;
+			userService.token = null;
+			$location.path("/");
 		}
 	});

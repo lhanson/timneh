@@ -1,6 +1,7 @@
 package io.github.lhanson.timneh.dao
 
 import io.github.lhanson.timneh.domain.UserDetails
+import org.springframework.dao.IncorrectResultSizeDataAccessException
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import spock.lang.Specification
@@ -37,6 +38,19 @@ class UserDaoTest extends Specification {
 			user.authorities.toList() == jdbcResult.authorities.toList()
 	}
 
+	def "loadUserById with an invalid ID returns null"() {
+		given:
+			IncorrectResultSizeDataAccessException exception =
+					new IncorrectResultSizeDataAccessException(1, 0)
+			1 * namedParameterJdbcTemplate.queryForObject(_, _, _) >> { throw exception }
+
+		when:
+			UserDetails user = userDao.loadUserById(12345)
+
+		then:
+			user == null
+	}
+
 	def "loadUserById with multiple authorities"() {
 		given:
 			jdbcResult = new UserDetails(
@@ -67,6 +81,19 @@ class UserDaoTest extends Specification {
 			user.emailAddress == jdbcResult.emailAddress
 			user.created      == jdbcResult.created
 			user.authorities.toList() == jdbcResult.authorities.toList()
+	}
+
+	def "loadUserByUsername with invalid user returns null"() {
+		given:
+			IncorrectResultSizeDataAccessException exception =
+					new IncorrectResultSizeDataAccessException(1, 0)
+			1 * namedParameterJdbcTemplate.queryForObject(_, _, _) >> { throw exception }
+
+		when:
+			UserDetails user = userDao.loadUserByUsername('invalid_username')
+
+		then:
+			user == null
 	}
 
 }

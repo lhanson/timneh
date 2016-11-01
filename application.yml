@@ -2,13 +2,13 @@
 server:
     port: 8081
 
-spring:
-  datasource:
-    username: timneh
-
 logging:
   level:
-    io.github.lhanson: TRACE
+    io.github.lhanson: DEBUG
+
+jwt:
+  token:
+    secret: sssshhhh!
 
 ---
 

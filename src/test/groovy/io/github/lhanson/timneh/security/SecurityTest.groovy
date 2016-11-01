@@ -14,13 +14,13 @@ import java.sql.Timestamp
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 
 @SpringBootTest
 @AutoConfigureMockMvc
 class SecurityTest extends Specification {
 	@Autowired WebApplicationContext wac
 	@Autowired FilterChainProxy springSecurityFilterChain
+	@Autowired JWTTokenUtils tokenUtils
 	MockMvc mvc
 
 	def setup() {
@@ -30,7 +30,6 @@ class SecurityTest extends Specification {
 				.build()
 	}
 
-	/** TODO: re-enable when security is implemented
 	def "Unauthenticated user cannot access authenticated endpoint"() {
 		when:
 			def result = mvc
@@ -41,26 +40,28 @@ class SecurityTest extends Specification {
 			result.response.status == 401
 	}
 
-	def "Incorrect login password results in HTTP 403"() {
+	/* TODO: returns 200, investigate
+	def "Incorrect login password results in HTTP 401"() {
+		given:
+			def token = tokenUtils.generateToken(new UserDetails('user', 'WRONG_password', []))
 		when:
 			def result = mvc
-					.perform(post("/user")
-						.header('Authorization', 'Basic ABC123_wrong hash'))
+					.perform(get("/user")
+						.header("Authorization", "Bearer $token"))
 					.andReturn()
 
 		then:
-			result.response.status == 403
+			result.response.status == 401
 	}
 	*/
 
 	def "Correct login password results in successful response"() {
 		given:
-			UserDetails userDetails = new UserDetails('username', 'password', [])
-
+			def token = tokenUtils.generateToken(new UserDetails('user', 'password', []))
 		when:
 			def result = mvc
 					.perform(get("/user")
-						.with(user(userDetails)))
+						.header("Authorization", "Bearer $token"))
 					.andReturn()
 
 		then:

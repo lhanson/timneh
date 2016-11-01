@@ -1,0 +1,18 @@
+# Baseline configuration.
+# Override in an environment-specific configuration
+server:
+    port: 8080
+
+spring:
+  datasource:
+    username: timneh
+
+jwt:
+  token:
+    # NOTE: set the 'secret' property in an external configuration
+    header: Authorization
+    expiration: 604800
+  routes:
+    authentication: auth
+    refresh: refresh
+    protected: protected
