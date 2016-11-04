@@ -41,7 +41,7 @@ class DiscussionController {
 		HttpHeaders headers = new HttpHeaders()
 		headers.setLocation(builder.path("/discussions/{id}").buildAndExpand(result).toUri())
 
-		new ResponseEntity<Void>(headers, HttpStatus.CREATED);
+		new ResponseEntity<Void>(headers, HttpStatus.CREATED)
 	}
 
 }

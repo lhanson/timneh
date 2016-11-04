@@ -2,6 +2,7 @@
  * PostgreSQL schema for initializing our database schema.
  * Based on http://docs.spring.io/spring-security/site/docs/current/reference/html/appendix-schema.html
  */
+drop table if exists comments cascade;
 drop table if exists discussions cascade;
 drop table if exists authorities cascade;
 drop table if exists users cascade;
@@ -30,4 +31,15 @@ create table discussions (
   created timestamp default current_timestamp,
   modified timestamp,
   constraint fk_discussions_author foreign key(author_id) references users(id)
+);
+
+create table comments (
+  id serial not null primary key,
+  author_id integer not null,
+  discussion_id integer not null,
+  text varchar(5000) not null,
+  created timestamp default current_timestamp,
+  modified timestamp,
+  constraint fk_comment_author foreign key(author_id) references users(id),
+  constraint fk_discussion foreign key(discussion_id) references discussions(id)
 );

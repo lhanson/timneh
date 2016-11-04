@@ -3,12 +3,12 @@ package io.github.lhanson.timneh.domain
 import java.sql.Timestamp
 
 /**
- * A Discussion is a topic of conversation to which Comments are associated
+ * A Comment is a User's contribution to a Discussion
  */
-class Discussion {
+class Comment {
 	int id
 	int author_id
-	String title
+	String text
 	Timestamp created
 	Timestamp modified
 }
