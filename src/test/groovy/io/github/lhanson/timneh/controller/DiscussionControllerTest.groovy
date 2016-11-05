@@ -42,16 +42,17 @@ class DiscussionControllerTest extends Specification {
 			discussion == result
 	}
 
-	def "load discussion by ID fails for invalid ID"() {
+	def "load discussion by ID returns 404 for invalid ID"() {
 		given:
 			def result = new Discussion(id: 1)
 			0 * discussionDao.loadById(1) >> result
 
 		when:
-			def discussion = discussionController.discussion('2')
+			ResponseEntity response = discussionController.discussion('2')
 
 		then:
-			discussion == null
+			response
+			response.statusCode == HttpStatus.NOT_FOUND
 	}
 
 	def "create discussion returns the ID of the newly created discussion"() {

@@ -25,9 +25,11 @@ class DiscussionController {
 	}
 
 	@GetMapping("/discussions/{id}")
-	Discussion discussion(@PathVariable('id') String id) {
+	ResponseEntity<Discussion> discussion(@PathVariable('id') String id) {
 		log.trace "Loading discussion $id"
-		discussionDao.loadById(Integer.valueOf(id))
+		def discussion = discussionDao.loadById(Integer.valueOf(id))
+		new ResponseEntity<>(discussion,
+				discussion ? HttpStatus.OK : HttpStatus.NOT_FOUND)
 	}
 
 	@PostMapping("/discussions")

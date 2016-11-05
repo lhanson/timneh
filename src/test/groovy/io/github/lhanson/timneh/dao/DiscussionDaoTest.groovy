@@ -6,8 +6,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert
 import spock.lang.Specification
 
-import static io.github.lhanson.timneh.TestUtil.asMap
-
 class DiscussionDaoTest extends Specification {
 	DiscussionDao discussionDao
 	JdbcTemplate jdbcTemplate
@@ -23,8 +21,8 @@ class DiscussionDaoTest extends Specification {
 
 	def "loadAll"() {
 		given:
-			def result = [asMap(new Discussion()), asMap(new Discussion())]
-			1 * jdbcTemplate.queryForList(_) >> result
+			def result = [new Discussion(), new Discussion()]
+			1 * jdbcTemplate.query(_, _) >> result
 		when:
 			List<Discussion> discussions = discussionDao.loadAll()
 
@@ -32,15 +30,35 @@ class DiscussionDaoTest extends Specification {
 			discussions
 	}
 
+	def "loadAll with no results returns null"() {
+		given:
+			1 * jdbcTemplate.query(_, _) >> null
+		when:
+			def result = discussionDao.loadAll()
+
+		then:
+			result == null
+	}
+
 	def "loadById"() {
 		given:
-			def result = asMap(new Discussion())
-			1 * namedParameterJdbcTemplate.queryForMap(_, _) >> result
+			def result = new Discussion()
+			1 * namedParameterJdbcTemplate.queryForObject(_, _, _) >> result
 		when:
 			Discussion discussion = discussionDao.loadById(1)
 
 		then:
 			discussion
+	}
+
+	def "loadById with no results returns null"() {
+		given:
+			1 * namedParameterJdbcTemplate.queryForObject(_, _, _) >> null
+		when:
+			def result = discussionDao.loadById(1)
+
+		then:
+			result == null
 	}
 
 	def "create"() {

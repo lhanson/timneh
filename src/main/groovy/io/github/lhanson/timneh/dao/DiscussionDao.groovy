@@ -1,24 +1,17 @@
 package io.github.lhanson.timneh.dao
 
 import io.github.lhanson.timneh.domain.Discussion
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
+import org.springframework.dao.IncorrectResultSizeDataAccessException
+import org.springframework.jdbc.core.BeanPropertyRowMapper
+import org.springframework.jdbc.core.RowMapper
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert
 import org.springframework.stereotype.Repository
 
 import javax.annotation.PostConstruct
 
-import static io.github.lhanson.timneh.Util.lowercaseKeys
-
 @Repository
-class DiscussionDao {
-	Logger log = LoggerFactory.getLogger(this.class)
-	@Autowired JdbcTemplate jdbcTemplate
-	@Autowired NamedParameterJdbcTemplate namedParameterJdbcTemplate
-	SimpleJdbcInsert insertDiscussion
+class DiscussionDao extends AbstractDao {
+	RowMapper<Discussion> rowMapper = BeanPropertyRowMapper.newInstance(Discussion)
 
 	@PostConstruct
 	void init() {
@@ -29,17 +22,19 @@ class DiscussionDao {
 
 	List<Discussion> loadAll() {
 		log.trace "Loading all discussions"
-		def results = []
-		jdbcTemplate.queryForList('select * from discussions').collect { row ->
-			results << new Discussion(lowercaseKeys(row))
-		}
-		results
+		jdbcTemplate.query('select * from discussions', rowMapper)
 	}
 
 	Discussion loadById(int id) {
 		log.trace "Loading discussion $id"
-		Map result = namedParameterJdbcTemplate.queryForMap('select * from discussions where id=:id', [id: id])
-		new Discussion(lowercaseKeys(result))
+		Discussion discussion
+		try {
+			discussion = namedParameterJdbcTemplate.queryForObject(
+				'select * from discussions where id=:id', [id: id], rowMapper)
+		} catch (IncorrectResultSizeDataAccessException e) {
+			handleExpectedZeroResult(e)
+		}
+		discussion
 	}
 
 	int create(int authorId, String title) {
