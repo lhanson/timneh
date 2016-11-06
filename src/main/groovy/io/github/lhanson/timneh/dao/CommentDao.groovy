@@ -25,6 +25,7 @@ class CommentDao {
 	void init() {
 		insertDiscussion = new SimpleJdbcInsert(jdbcTemplate.dataSource)
 				.withTableName('comments')
+				.usingColumns('author_id', 'discussion_id', 'text')
 				.usingGeneratedKeyColumns('id')
 	}
 

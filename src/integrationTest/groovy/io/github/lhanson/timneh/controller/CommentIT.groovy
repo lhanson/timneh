@@ -47,4 +47,18 @@ class CommentIT extends AbstractIntegrationSpec {
 			response.statusCodeValue == 404
 	}
 
+	def "new comment has a created date set"() {
+		given:
+			HttpEntity request = new HttpEntity("Comment for testing creation date", headersWithToken)
+			template.exchange(baseUrl + "/1", POST, request, ResponseEntity)
+
+		when:
+			def response = template.exchange(
+					baseUrl + '/1', GET, authenticatedRequest, List)
+
+		then:
+			response.statusCodeValue == 200
+			response.body.every { it.created }
+	}
+
 }

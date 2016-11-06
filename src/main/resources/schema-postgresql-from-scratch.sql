@@ -28,7 +28,7 @@ create table discussions (
   id serial not null primary key,
   author_id integer not null,
   title varchar(50) not null,
-  created timestamp default current_timestamp,
+  created timestamp default current_timestamp not null,
   modified timestamp,
   constraint fk_discussions_author foreign key(author_id) references users(id)
 );
@@ -38,7 +38,7 @@ create table comments (
   author_id integer not null,
   discussion_id integer not null,
   text varchar(5000) not null,
-  created timestamp default current_timestamp,
+  created timestamp default current_timestamp not null,
   modified timestamp,
   constraint fk_comment_author foreign key(author_id) references users(id),
   constraint fk_discussion foreign key(discussion_id) references discussions(id)

@@ -56,4 +56,18 @@ class DiscussionIT extends AbstractIntegrationSpec {
 			response.headers['Location'][0] == "$baseUrl/2"
 	}
 
+	def "new discussion has a created date set"() {
+		given:
+			HttpEntity request = new HttpEntity("New Discussion for Testing Creation Date", headersWithToken)
+			template.exchange(baseUrl, POST, request, ResponseEntity)
+
+		when:
+			def response = template.exchange(
+					baseUrl, GET, authenticatedRequest, List)
+
+		then:
+			response.statusCodeValue == 200
+			response.body.every { it.created }
+	}
+
 }

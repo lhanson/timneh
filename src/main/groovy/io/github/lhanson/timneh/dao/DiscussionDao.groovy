@@ -17,6 +17,7 @@ class DiscussionDao extends AbstractDao {
 	void init() {
 		insertDiscussion = new SimpleJdbcInsert(jdbcTemplate.dataSource)
 				.withTableName('discussions')
+				.usingColumns('author_id', 'title')
 				.usingGeneratedKeyColumns('id')
 	}
 
