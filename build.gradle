@@ -39,7 +39,10 @@ task integrationTest(type: Test) {
 	classpath = sourceSets.integrationTest.runtimeClasspath
 	dependsOn processResources
 	dependsOn test
-	systemProperty 'spring.profiles.active', System.properties['spring.profiles.active']
+}
+
+tasks.withType(Test) {
+	systemProperties = System.getProperties()
 }
 
 repositories {
