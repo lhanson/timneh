@@ -9,22 +9,14 @@ import org.springframework.security.core.Authentication
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
-import java.time.LocalDateTime
-
 @RestController
 class UserController {
 	Logger log = LoggerFactory.getLogger(this.class)
 	@Autowired DiscussionDao discussionDao
-
-	@GetMapping("/now")
-	Map<String, Object> localDateTime() {
-		['id': 1234, 'content': LocalDateTime.now().toString()]
-	}
 
 	@GetMapping("/user")
 	User user(Authentication authentication) {
 		log.trace("Loaded authentication {}", authentication)
 		new User(authentication.principal)
 	}
-
 }
