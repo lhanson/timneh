@@ -32,6 +32,15 @@ class DiscussionIT extends AbstractIntegrationSpec {
 			response.statusCodeValue == 200
 	}
 
+	def "get discussion by invalid ID returns 404"() {
+		when:
+			def response = template.exchange(
+					baseUrl + '/9999', GET, authenticatedRequest, Discussion)
+
+		then:
+			response.statusCodeValue == 404
+	}
+
 	def "create discussion"() {
 		given:
 			HttpEntity request = new HttpEntity("Integration Test Discussion", headersWithToken)

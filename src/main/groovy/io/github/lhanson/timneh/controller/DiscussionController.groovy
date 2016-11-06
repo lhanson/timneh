@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.util.UriComponentsBuilder
 
 @RestController
-class DiscussionController {
+class DiscussionController extends AbstractController {
 	Logger log = LoggerFactory.getLogger(this.class)
 	@Autowired DiscussionDao discussionDao
 
@@ -27,9 +27,7 @@ class DiscussionController {
 	@GetMapping("/discussions/{id}")
 	ResponseEntity<Discussion> discussion(@PathVariable('id') String id) {
 		log.trace "Loading discussion $id"
-		def discussion = discussionDao.loadById(Integer.valueOf(id))
-		new ResponseEntity<>(discussion,
-				discussion ? HttpStatus.OK : HttpStatus.NOT_FOUND)
+		returnIfFound(discussionDao.loadById(Integer.valueOf(id)))
 	}
 
 	@PostMapping("/discussions")

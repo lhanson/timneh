@@ -30,16 +30,17 @@ class DiscussionControllerTest extends Specification {
 			discussions.contains result
 	}
 
-	def "load discussion by ID"() {
+	def "load discussion by id"() {
 		given:
-			def result = new Discussion(id: 1)
-			1 * discussionDao.loadById(1) >> result
+			def discussion = new Discussion(id: 1)
+			1 * discussionDao.loadById(1) >> discussion
 
 		when:
-			def discussion = discussionController.discussion('1')
+			ResponseEntity response = discussionController.discussion('1')
 
 		then:
-			discussion == result
+			response.statusCode == HttpStatus.OK
+			response.body == discussion
 	}
 
 	def "load discussion by ID returns 404 for invalid ID"() {
@@ -51,7 +52,6 @@ class DiscussionControllerTest extends Specification {
 			ResponseEntity response = discussionController.discussion('2')
 
 		then:
-			response
 			response.statusCode == HttpStatus.NOT_FOUND
 	}
 

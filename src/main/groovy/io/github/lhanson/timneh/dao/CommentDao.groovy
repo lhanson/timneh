@@ -1,9 +1,12 @@
 package io.github.lhanson.timneh.dao
 
+import io.github.lhanson.timneh.domain.Comment
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.jdbc.core.BeanPropertyRowMapper
 import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.core.RowMapper
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert
 import org.springframework.stereotype.Repository
@@ -16,12 +19,19 @@ class CommentDao {
 	@Autowired JdbcTemplate jdbcTemplate
 	@Autowired NamedParameterJdbcTemplate namedParameterJdbcTemplate
 	SimpleJdbcInsert insertDiscussion
+	RowMapper<Comment> rowMapper = BeanPropertyRowMapper.newInstance(Comment)
 
 	@PostConstruct
 	void init() {
 		insertDiscussion = new SimpleJdbcInsert(jdbcTemplate.dataSource)
 				.withTableName('comments')
 				.usingGeneratedKeyColumns('id')
+	}
+
+	List<Comment> loadByDiscussionId(int discussionId) {
+		log.trace "Loading comments for discussion $discussionId"
+		namedParameterJdbcTemplate.query(
+				'select * from comments where discussion_id=:id', [id: discussionId], rowMapper)
 	}
 
 	int create(int authorId, int discussionId, String comment) {
