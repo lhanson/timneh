@@ -11,7 +11,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-
 import org.springframework.security.crypto.password.NoOpPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.AuthenticationEntryPoint
@@ -20,7 +19,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 class SecurityConfig extends WebSecurityConfigurerAdapter {
-	@Autowired JWTAuthenticationFilter authenticationFilter
+	@Autowired JWTAuthenticationFilter jwtAuthenticationFilter
 	@Autowired AuthenticationEntryPoint authenticationEntryPoint
 
 	@Override
@@ -33,14 +32,15 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.and()
 				.authorizeRequests()
 					.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-					.antMatchers('/', '/index.html', '/home.html', '/login**').permitAll()
+					.antMatchers(HttpMethod.POST, '/login').permitAll()
+					.antMatchers(HttpMethod.GET, '/', '/index.html', '/home.html', '/error').permitAll()
 					.anyRequest().authenticated()
 					.and()
-				// JWT authentication
-				.addFilterBefore(
-					authenticationFilter, UsernamePasswordAuthenticationFilter)
+				 // JWT authentication
+				.addFilterAfter(
+					jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter)
 				.exceptionHandling()
-		            .authenticationEntryPoint(authenticationEntryPoint)
+					.authenticationEntryPoint(authenticationEntryPoint)
 	}
 
 	@Bean

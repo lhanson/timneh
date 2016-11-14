@@ -1,6 +1,7 @@
 package io.github.lhanson.timneh.security
 
 import io.github.lhanson.timneh.domain.UserDetails
+import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.SignatureException
 import spock.lang.Specification
 
@@ -62,6 +63,18 @@ class JWTTokenUtilsTest extends Specification {
 
 		then:
 			thrown SignatureException
+	}
+
+	def "Expired tokens are not valid"() {
+		given:
+			tokenUtils.expiration = -1
+			def token = tokenUtils.generateToken(userDetails)
+
+		when:
+			tokenUtils.validateToken(token, userDetails)
+
+		then:
+			thrown ExpiredJwtException
 	}
 
 	def "Tokens are not valid for a different user"() {

@@ -3,15 +3,12 @@ package io.github.lhanson.timneh.security
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
 
 @Component
 class JWTTokenUtils {
-	Logger log = LoggerFactory.getLogger(this.class)
 	@Value('${jwt.token.secret}')
 	String secret
 	@Value('${jwt.token.expiration}')
@@ -24,23 +21,18 @@ class JWTTokenUtils {
 	}
 
 	String getUsernameFromToken(String token) {
-		getClaimsFromToken(token)?.getSubject()
+		getClaimsFromToken(token).getSubject()
 	}
 
 	Date getExpirationDateFromToken(String token) {
-		getClaimsFromToken(token)?.getExpiration()
+		getClaimsFromToken(token).getExpiration()
 	}
 
 	private Claims getClaimsFromToken(String token) {
-		try {
-			Jwts.parser()
-					.setSigningKey(secret)
-					.parseClaimsJws(token)
-					.getBody()
-		} catch (Exception e) {
-			log.error "Error getting claims from token", e
-			throw e
-		}
+		Jwts.parser()
+				.setSigningKey(secret)
+				.parseClaimsJws(token)
+				.getBody()
 	}
 
 	private Date generateCurrentDate() {

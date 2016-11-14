@@ -28,6 +28,7 @@ class UserDao extends AbstractDao {
 		try {
 			userDetails = namedParameterJdbcTemplate.queryForObject(
 				databaseQueries['loadUserByUsername'], [username: username], rowMapper)
+			println "User details: ${userDetails.password}"
 		} catch (IncorrectResultSizeDataAccessException e) {
 			handleExpectedZeroResult(e)
 		}

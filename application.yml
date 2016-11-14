@@ -3,8 +3,11 @@ server:
     port: 8081
 
 logging:
+  pattern:
+    console: "%clr(%5p) %-40.40logger{39} %clr(:){faint} %m%n%wEx"
   level:
-    io.github.lhanson: DEBUG
+    io.github.lhanson: TRACE
+    org.springframework: TRACE
 
 jwt:
   token:
