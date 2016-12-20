@@ -21,7 +21,9 @@ class AbstractIntegrationSpec extends Specification {
 
 	def setup() {
 		// Create an HttpEntity request with a correct JWT token
-		String token = tokenUtils.generateToken(new UserDetails("user", "password", []))
+		def user = new UserDetails("user", "password", [])
+		user.id = 1
+		String token = tokenUtils.generateToken(user)
 		headersWithToken = new HttpHeaders()
 		headersWithToken.set("Authorization", "Bearer $token")
 		authenticatedRequest = new HttpEntity<>(headersWithToken)

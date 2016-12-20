@@ -2,9 +2,17 @@
 server:
     port: 8081
 
+spring:
+  output:
+    ansi:
+      enabled: ALWAYS
+
 logging:
+  pattern:
+    console: "%clr(%5p) %-40.40logger{39} %clr(:){faint} %m%n%wEx"
   level:
-    io.github.lhanson: DEBUG
+    io.github.lhanson: TRACE
+    org.springframework.security: DEBUG
 
 jwt:
   token:

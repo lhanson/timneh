@@ -1,17 +1,21 @@
 package io.github.lhanson.timneh.security
 
 import io.github.lhanson.timneh.domain.UserDetails
+import io.jsonwebtoken.Claims
+import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.SignatureException
 import spock.lang.Specification
 
 class JWTTokenUtilsTest extends Specification {
 	JWTTokenUtils tokenUtils
 	UserDetails userDetails = new UserDetails('username', 'password', [])
+	String token
 
 	def setup() {
 		tokenUtils = new JWTTokenUtils()
 		tokenUtils.expiration = System.currentTimeMillis() + 1000
 		tokenUtils.secret = 'secret'
+		token = tokenUtils.generateToken(userDetails)
 	}
 
 	def "Tokens are correctly parsed when prefixed with 'Bearer' scheme"() {
@@ -27,49 +31,41 @@ class JWTTokenUtilsTest extends Specification {
 
 	def "getUsernameFromToken"() {
 		given:
-			def token = tokenUtils.generateToken(userDetails)
+			Claims claims = tokenUtils.getClaimsFromToken(token)
 
 		when:
-			def username = tokenUtils.getUsernameFromToken(token)
+			def username = tokenUtils.getUsername(claims)
+
 		then:
 			username == userDetails.username
 	}
 
-	def "getExpirationDateFromToken"() {
-		given:
-			def token = tokenUtils.generateToken(userDetails)
-
-		when:
-			def expiration = tokenUtils.getExpirationDateFromToken(token)
-
-		then:
-			expiration
-	}
-
 	def "validateToken"() {
 		when:
-			def token = tokenUtils.generateToken(userDetails)
+			Claims claims = tokenUtils.getClaimsFromToken(token)
+
 		then:
-			tokenUtils.validateToken(token, userDetails)
+			tokenUtils.isValid(claims)
 	}
 
 	def "Tampered tokens are not valid"() {
-		given:
-			def token = tokenUtils.generateToken(userDetails)
-
 		when:
-			tokenUtils.validateToken(token + 'a', userDetails)
+			tokenUtils.getClaimsFromToken(token + 'a')
 
 		then:
 			thrown SignatureException
 	}
 
-	def "Tokens are not valid for a different user"() {
+	def "Expired tokens are not valid"() {
+		given:
+			tokenUtils.expiration = -1
+			token = tokenUtils.generateToken(userDetails)
+
 		when:
-			def token = tokenUtils.generateToken(userDetails)
+			tokenUtils.getClaimsFromToken(token)
 
 		then:
-			!tokenUtils.validateToken(token, new UserDetails('different_user', 'password', []))
+			thrown ExpiredJwtException
 	}
 
 }

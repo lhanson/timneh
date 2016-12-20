@@ -1,5 +1,6 @@
 # timneh [![Build Status](https://travis-ci.org/lhanson/timneh.svg?branch=master)](https://travis-ci.org/lhanson/timneh) [![codecov](https://codecov.io/gh/lhanson/timneh/branch/master/graph/badge.svg)](https://codecov.io/gh/lhanson/timneh) [![Dependency Status](https://www.versioneye.com/user/projects/58012e8fa23d520045b212c5/badge.svg?style=flat-square)](https://www.versioneye.com/user/projects/58012e8fa23d520045b212c5) [![Dependency Status](https://dependencyci.com/github/lhanson/timneh/badge)](https://dependencyci.com/github/lhanson/timneh)
 
+
 A squawky, dusty discussion forum for zygodactyl cringelords
 
 ## Testing
@@ -41,3 +42,36 @@ Again, you can log in for testing with username `user` and password `password`
 
 The database is initialized by platform-specific scripts activated by Spring Boot profiles.
 See the Spring Boot [database initialization docs](http://docs.spring.io/spring-boot/docs/current/reference/html/howto-database-initialization.html#howto-initialize-a-database-using-spring-jdbc) for details.
+
+## Authentication
+
+Timneh uses [JSON Web Tokens](https://jwt.io/) for stateless client authentication. The only database lookup
+required is upon initial authentication, subsequent state is stored in the token itself, which is presented
+upon each client request and validated by the server.
+
+A client makes an initial request to `/login` using [HTTP Basic Authentication](https://tools.ietf.org/html/rfc2617).
+Upon successful authentication, the server will return the token in the body of the response. Subsequent
+client requests include an `Authorization` header using the `Bearer` schema:
+
+    Authorization: Bearer <token>
+
+## API
+
+Here's a brief listing of the API endpoints available, and some `curl` examples to invoke them:
+
+    * POST /login (see above)
+      curl -u user:password localhost/login
+      
+    * GET /discussions
+      curl --header "Authorization: Bearer [TOKEN]" localhost/discussions/1
+      
+    * POST /discussions
+      curl --header "Authorization: Bearer [TOKEN]" -X POST -H "Content-Type: application/json" -d 'NEW TOPIC' localhost/discussions
+    
+    * GET /comments (for discussion 1)
+      curl --header "Authorization: Bearer [TOKEN]" localhost/comments/1
+      
+    * POST /comments (for dicussion 1)
+      curl --header "Authorization: Bearer [TOKEN]" -X POST -H "Content-Type: application/json" -d 'First post...' localhost/comments/1
+    
+

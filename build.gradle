@@ -69,6 +69,7 @@ dependencies {
 	testCompile 'org.spockframework:spock-spring:1.1-groovy-2.4-rc-2'
 	testCompile 'org.springframework.boot:spring-boot-starter-test'
 	testCompile 'org.springframework.security:spring-security-test'
+	testCompile 'org.apache.httpcomponents:httpclient'
 }
 
 bootRun {
@@ -76,7 +77,7 @@ bootRun {
 }
 bootRun.systemProperties = System.properties
 
-processResources << {
+processResources.doLast {
 	// If we're using HSQLDB (i.e., no Spring profile specified), prepend the
 	// HSQLDB setup commands before the main DDL statements.
 	if (!System.getProperty('spring.profiles.active')) {

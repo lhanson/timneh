@@ -1,17 +1,14 @@
 package io.github.lhanson.timneh.security
 
+import io.github.lhanson.timneh.domain.UserDetails
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Component
 
 @Component
 class JWTTokenUtils {
-	Logger log = LoggerFactory.getLogger(this.class)
 	@Value('${jwt.token.secret}')
 	String secret
 	@Value('${jwt.token.expiration}')
@@ -23,24 +20,23 @@ class JWTTokenUtils {
 		match ? match[0][1] : null
 	}
 
-	String getUsernameFromToken(String token) {
-		getClaimsFromToken(token)?.getSubject()
+	String getUsername(Claims claims) {
+		claims.getSubject()
 	}
 
-	Date getExpirationDateFromToken(String token) {
-		getClaimsFromToken(token)?.getExpiration()
+	String getFullname(Claims claims) {
+		claims.get('fn', String)
 	}
 
-	private Claims getClaimsFromToken(String token) {
-		try {
-			Jwts.parser()
-					.setSigningKey(secret)
-					.parseClaimsJws(token)
-					.getBody()
-		} catch (Exception e) {
-			log.error "Error getting claims from token", e
-			throw e
-		}
+	Integer getUid(Claims claims) {
+		claims.get('uid', Integer)
+	}
+
+	Claims getClaimsFromToken(String token) {
+		Jwts.parser()
+				.setSigningKey(secret)
+				.parseClaimsJws(token)
+				.getBody()
 	}
 
 	private Date generateCurrentDate() {
@@ -51,13 +47,16 @@ class JWTTokenUtils {
 		new Date(System.currentTimeMillis() + expiration * 1000)
 	}
 
-	private Boolean isTokenExpired(String token) {
-		Date expiration = getExpirationDateFromToken(token)
-		return expiration.before(generateCurrentDate())
+	Boolean isTokenExpired(Claims claims) {
+		claims.getExpiration().before(generateCurrentDate())
 	}
 
 	String generateToken(UserDetails userDetails) {
-		generateTokenForClaims(['sub': userDetails.username])
+		generateTokenForClaims([
+				'sub': userDetails.username,
+				'uid': userDetails.id,
+				'fn' : userDetails.fullName
+		])
 	}
 
 	private String generateTokenForClaims(Map<String, Object> claims) {
@@ -68,8 +67,7 @@ class JWTTokenUtils {
 				.compact()
 	}
 
-	Boolean validateToken(String token, UserDetails userDetails) {
-		final String username = getUsernameFromToken(token)
-		return (username == userDetails.username && !isTokenExpired(token))
+	Boolean isValid(Claims claims) {
+		!isTokenExpired(claims)
 	}
 }

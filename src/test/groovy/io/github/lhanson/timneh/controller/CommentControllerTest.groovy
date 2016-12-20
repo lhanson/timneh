@@ -3,9 +3,9 @@ package io.github.lhanson.timneh.controller
 import io.github.lhanson.timneh.dao.CommentDao
 import io.github.lhanson.timneh.domain.Comment
 import io.github.lhanson.timneh.domain.UserDetails
+import io.github.lhanson.timneh.security.UserAuthentication
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.security.authentication.TestingAuthenticationToken
 import org.springframework.web.util.UriComponentsBuilder
 import spock.lang.Specification
 
@@ -32,7 +32,7 @@ class CommentControllerTest extends Specification {
 			ResponseEntity response = commentController.createComment(
 					discussionId,
 					commentText,
-					new TestingAuthenticationToken(testUser, null),
+					new UserAuthentication(user: testUser),
 					new UriComponentsBuilder())
 
 		then:
