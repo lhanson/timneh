@@ -1,6 +1,7 @@
 package io.github.lhanson.timneh.security
 
-import io.github.lhanson.timneh.domain.UserDetails
+import io.github.lhanson.timneh.user.UserDetails
+import io.github.lhanson.timneh.user.UserDetailsService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.security.authentication.AuthenticationManager

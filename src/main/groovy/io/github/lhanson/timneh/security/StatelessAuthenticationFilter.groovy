@@ -1,6 +1,8 @@
 package io.github.lhanson.timneh.security
 
-import io.github.lhanson.timneh.domain.UserDetails
+import io.github.lhanson.timneh.user.UserDetails
+import io.github.lhanson.timneh.user.UserAuthentication
+import io.github.lhanson.timneh.user.UserDetailsService
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.SignatureException
