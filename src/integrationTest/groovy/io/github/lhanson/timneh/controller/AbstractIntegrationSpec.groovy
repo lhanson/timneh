@@ -18,6 +18,7 @@ class AbstractIntegrationSpec extends Specification {
 	String baseUrl
 	HttpEntity<?> authenticatedRequest
 	HttpHeaders headersWithToken
+	Long originalExpiration
 
 	def setup() {
 		// Create an HttpEntity request with a correct JWT token
@@ -27,5 +28,11 @@ class AbstractIntegrationSpec extends Specification {
 		headersWithToken = new HttpHeaders()
 		headersWithToken.set("Authorization", "Bearer $token")
 		authenticatedRequest = new HttpEntity<>(headersWithToken)
+		originalExpiration = tokenUtils.expiration
+	}
+
+	def cleanup() {
+		// Avoid any side effects caused by tests which tamper with expiration
+		tokenUtils.expiration = originalExpiration
 	}
 }
