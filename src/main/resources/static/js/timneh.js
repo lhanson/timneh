@@ -44,8 +44,12 @@ angular.module('timneh', [ 'ngRoute', 'ngStorage' ])
 	.controller('navigation', function($rootScope, $http, $location, $localStorage, $scope, $route) {
 		var self = this;
 		var authenticate = function(credentials, callback) {
-			 $http.post('login', credentials)
-				.then(function(response) {
+			var auth = window.btoa(credentials.username + ':' + credentials.password);
+			$http({
+				method: 'POST',
+				url: '/login',
+				headers: {"Authorization": "Basic " + auth}
+			}).then(function(response) {
 					$localStorage.token = response.data;
 					callback && callback();
 				}, function() {
@@ -70,6 +74,6 @@ angular.module('timneh', [ 'ngRoute', 'ngStorage' ])
 			$location.path("/");
 			$scope.authenticated = false;
 			$route.reload();
-		}
+		};
 		$scope.authenticated = $localStorage.token;
 	});
