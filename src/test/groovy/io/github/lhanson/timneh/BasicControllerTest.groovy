@@ -24,4 +24,13 @@ class BasicControllerTest extends Specification {
 			result.response.contentAsString.contains '<title>Timneh</title>'
 	}
 
+	def "login partial"() {
+		when:
+			def result = mvc
+					.perform(get("/loginForm.html"))
+					.andReturn()
+
+		then:
+			result.response.status == 200
+	}
 }
