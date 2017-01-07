@@ -1,4 +1,5 @@
-angular.module('timneh', [ 'ngRoute', 'ngStorage', 'angular-jwt' ])
+angular
+	.module('timneh', [ 'ngRoute', 'ngStorage', 'angular-jwt' ])
 
 	.config(function($routeProvider, $httpProvider) {
 		$routeProvider.when('/', {
@@ -19,8 +20,10 @@ angular.module('timneh', [ 'ngRoute', 'ngStorage', 'angular-jwt' ])
 						config.headers = config.headers || {};
 						if ($localStorage.token) {
 							if (jwtHelper.isTokenExpired($localStorage.token)) {
+								console.log('Deleting expired token');
 								delete $localStorage.token;
 							} else {
+								console.log('Sending token');
 								config.headers.Authorization = 'Bearer ' + $localStorage.token;
 							}
 						}
@@ -35,11 +38,12 @@ angular.module('timneh', [ 'ngRoute', 'ngStorage', 'angular-jwt' ])
 	})
 
 	.controller('home', ['$http', '$localStorage', '$scope', function($http, $localStorage, $scope) {
-		$scope.authenticated = $localStorage.token;
+		$scope.authenticated = Boolean($localStorage.token);
+		console.log('Home controller, authenticated', $scope.authenticated);
 		if ($scope.authenticated) {
 			$http.get('/user').then(function(response) {
-				console.log('user data:', $scope.user);
 				$scope.user = response.data
+				console.log('user data:', $scope.user);
 			});
 		}
 	}])
@@ -81,5 +85,6 @@ angular.module('timneh', [ 'ngRoute', 'ngStorage', 'angular-jwt' ])
 			$scope.authenticated = false;
 			$route.reload();
 		};
-		$scope.authenticated = $localStorage.token;
+		$scope.authenticated = Boolean($localStorage.token);
+		console.log("Initialized navigation controller, authenticated", $scope.authenticated);
 	});

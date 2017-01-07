@@ -47,7 +47,7 @@ class StatelessAuthenticationFilter extends GenericFilterBean {
         if (token) {
             try {
                 Claims claims = tokenUtils.getClaimsFromToken(token)
-                log.debug "Examining token $token for username ${claims.getSubject()}"
+                log.debug "Examining token for username ${claims.getSubject()}"
                 if (tokenUtils.isValid(claims)) {
                     log.trace "Valid token for ${claims.getSubject()}"
                     // Derive UserDetails from token rather than doing a database lookup
