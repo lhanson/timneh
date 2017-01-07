@@ -27,7 +27,7 @@ class StatelessLoginFilterTest extends Specification {
 
 	def "Null password provided"() {
 		given:
-			def encoded = 'nonexistent_user:password'.bytes.encodeBase64().toString()
+			def encoded = 'nonexistent_user:'.bytes.encodeBase64().toString()
 			def request = new MockHttpServletRequest()
 			request.addHeader("Authorization", "Basic $encoded")
 
