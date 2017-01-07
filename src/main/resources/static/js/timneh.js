@@ -1,7 +1,13 @@
 angular
-	.module('timneh', [ 'ngRoute', 'ngStorage', 'angular-jwt' ])
-
-	.config(function($routeProvider, $httpProvider) {
+	.module('timneh', [ 'ngRoute', 'angular-jwt' ])
+	.constant('timneh_config', {
+		'token_name': 'jwt_token'
+	})
+	.run(function(authManager) {
+		console.log('Checking auth on refresh');
+		authManager.checkAuthOnRefresh();
+	})
+	.config(function($routeProvider, $httpProvider, jwtOptionsProvider, timneh_config) {
 		$routeProvider.when('/', {
 			templateUrl : 'home.html',
 			controller : 'home',
@@ -11,36 +17,25 @@ angular
 			controller : 'navigation',
 			controllerAs: 'controller'
 		}).otherwise('/');
+
+		jwtOptionsProvider.config({
+			tokenGetter: ['options', function(options) {
+				// Send the token if we're not merely requesting templates
+				if (!options || options.url.substr(options.url.length - 5) != '.html') {
+					console.log('Loading token');
+					return localStorage.getItem(timneh_config.token_name);
+				}
+			}]
+		});
+
 		$httpProvider.defaults.headers.common["X-Requested-With"] = 'XMLHttpRequest';
 
-		$httpProvider.interceptors.push(['$q', '$location', '$localStorage', 'jwtHelper',
-			function ($q, $location, $localStorage, jwtHelper) {
-				return {
-					'request': function (config) {
-						config.headers = config.headers || {};
-						if ($localStorage.token) {
-							if (jwtHelper.isTokenExpired($localStorage.token)) {
-								console.log('Deleting expired token');
-								delete $localStorage.token;
-							} else {
-								console.log('Sending token');
-								config.headers.Authorization = 'Bearer ' + $localStorage.token;
-							}
-						}
-						return config;
-					},
-					'responseError': function (response) {
-						console.log("Got response error", response);
-						return $q.reject(response);
-					}
-				};
-		}]);
+		$httpProvider.interceptors.push('jwtInterceptor');
 	})
 
-	.controller('home', ['$http', '$localStorage', '$scope', function($http, $localStorage, $scope) {
-		$scope.authenticated = Boolean($localStorage.token);
-		console.log('Home controller, authenticated', $scope.authenticated);
-		if ($scope.authenticated) {
+	.controller('home', ['$http', '$scope', 'timneh_config', function($http, $scope) {
+		console.log('Home controller, authenticated', $scope.isAuthenticated);
+		if ($scope.isAuthenticated) {
 			$http.get('/user').then(function(response) {
 				$scope.user = response.data
 				console.log('user data:', $scope.user);
@@ -48,7 +43,7 @@ angular
 		}
 	}])
 
-	.controller('navigation', function($rootScope, $http, $location, $localStorage, $scope, $route) {
+	.controller('navigation', function($rootScope, $http, $location, $scope, $route, authManager, timneh_config) {
 		var self = this;
 		var authenticate = function(credentials, callback) {
 			var auth = window.btoa(credentials.username + ':' + credentials.password);
@@ -57,7 +52,7 @@ angular
 				url: '/login',
 				headers: {"Authorization": "Basic " + auth}
 			}).then(function(response) {
-					$localStorage.token = response.data;
+					localStorage.setItem(timneh_config.token_name, response.data);
 					callback && callback();
 				}, function() {
 					callback && callback();
@@ -67,7 +62,7 @@ angular
 		self.credentials = {};
 		self.login = function() {
 			authenticate(self.credentials, function() {
-				if ($localStorage.token) {
+				if (localStorage.getItem(timneh_config.token_name)) {
 					$location.path("/");
 					self.error = false;
 				} else {
@@ -80,11 +75,11 @@ angular
 			$location.path("/profile");
 		};
 		self.logout = function() {
-			delete $localStorage.token;
+			console.log("Logging out", authManager);
+			localStorage.removeItem(timneh_config.token_name);
+			authManager.unauthenticate();
 			$location.path("/");
-			$scope.authenticated = false;
 			$route.reload();
 		};
-		$scope.authenticated = Boolean($localStorage.token);
-		console.log("Initialized navigation controller, authenticated", $scope.authenticated);
+		console.log("Initialized navigation controller, authenticated", $scope.isAuthenticated);
 	});

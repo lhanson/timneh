@@ -1,7 +1,7 @@
 <h1>Greeting</h1>
-<div ng-show="authenticated">
+<div ng-if="isAuthenticated" >
 	<p>Welcome, {{user.username}}</p>
 </div>
-<div ng-show="!authenticated">
+<div ng-if="!isAuthenticated">
 	<p>Login to see your content</p>
 </div>

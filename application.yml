@@ -12,7 +12,7 @@ logging:
     console: "%clr(%5p) %-40.40logger{39} %clr(:){faint} %m%n%wEx"
   level:
     io.github.lhanson: TRACE
-    org.springframework.security: DEBUG
+    #org.springframework.security: DEBUG
 
 jwt:
   token:
