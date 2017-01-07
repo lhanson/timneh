@@ -46,7 +46,7 @@ class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter {
         AuthenticationRequest authRequest = getAuthRequest(request)
         if (authRequest) {
             UserDetails user = userDetailsService.loadUserByUsername(authRequest.username)
-            if (authRequest.password != user.password) {
+            if (authRequest.password != user?.password) {
                 throw new BadCredentialsException('Bad credentials')
             }
             log.debug "Loaded userDetails {}", user
