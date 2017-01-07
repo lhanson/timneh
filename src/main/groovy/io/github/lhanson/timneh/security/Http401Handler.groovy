@@ -17,16 +17,16 @@ class Http401Handler implements AuthenticationEntryPoint, AuthenticationFailureH
 
 	@Override
 	void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
-		send401(response, e)
+		send401(request, response, e)
 	}
 
 	@Override
 	void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) throws IOException, ServletException {
-		send401(response, e)
+		send401(request, response, e)
 	}
 
-	void send401(HttpServletResponse response, AuthenticationException e) {
-		log.info "Authentication error, returning 401. Cause: ${e.message}"
+	void send401(HttpServletRequest request, HttpServletResponse response, AuthenticationException e) {
+		log.debug "Authentication error for path ${request.requestURI}, returning 401. Cause: ${e.message}"
 		response.addHeader('WWW-Authenticate', 'Bearer token_type="JWT"')
 		response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Access Denied")
 	}

@@ -39,7 +39,9 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.and()
 				.authorizeRequests()
 					.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-					.antMatchers(HttpMethod.GET, '/', '/index.html', '/home.html', '/loginForm.html').permitAll()
+					.antMatchers(HttpMethod.GET,
+							'/', '/index.html', '/home.html', '/loginForm.html',
+							'/mappings', '/v2/api-docs', '/swagger-ui.html', '/swagger-resources/**').permitAll()
 				    .antMatchers(HttpMethod.POST, '/login', '/index.html', '/home.html').permitAll()
 					.anyRequest().authenticated()
 					.and()
