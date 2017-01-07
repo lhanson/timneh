@@ -39,9 +39,8 @@ class SecurityTest extends Specification {
 					.andReturn()
 
 		then:
+			// The request actually hits the UserDao, and only uses the UserDetails provided for its id
 			result.response.contentAsString.contains 'username'
-			result.response.contentAsString.contains 'Firstname M. Lastname'
-			result.response.contentAsString.contains 'email@domain.tld'
 			result.response.status == 200
 	}
 

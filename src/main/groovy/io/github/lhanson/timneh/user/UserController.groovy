@@ -1,6 +1,5 @@
 package io.github.lhanson.timneh.user
 
-import io.github.lhanson.timneh.discussion.DiscussionDao
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,11 +10,11 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class UserController {
 	Logger log = LoggerFactory.getLogger(this.class)
-	@Autowired DiscussionDao discussionDao
+	@Autowired UserDao userDao
 
 	@GetMapping("/user")
 	User user(Authentication authentication) {
 		log.trace("Loaded authentication {}", authentication)
-		new User(authentication.principal)
+		new User(userDao.loadUserById(authentication.principal.id))
 	}
 }
