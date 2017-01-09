@@ -15,7 +15,9 @@ To run integration tests, do:
 
 ## Running the app
 
-Running the application locally depends on your desired datasource.
+Running the application locally depends on your desired datasource. For testing or development, the default
+configuration is fine; however, if deploying to serve real user data you *MUST* provide your own `application.yml`
+with a unique private `jwt.token.secret` string which will be used to sign all user authentication tokens.
 
 ### In-memory database
 

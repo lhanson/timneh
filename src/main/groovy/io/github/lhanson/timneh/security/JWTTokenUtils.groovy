@@ -4,12 +4,17 @@ import io.github.lhanson.timneh.user.UserDetails
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.SignatureAlgorithm
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
+import javax.annotation.PostConstruct
+
 @Component
 class JWTTokenUtils {
-	@Value('${jwt.token.secret}')
+	Logger log = LoggerFactory.getLogger(this.class)
+	@Value('${jwt.token.secret?:sssshhhh!}')
 	String secret
 	@Value('${jwt.token.expiration}')
 	Long expiration
@@ -69,5 +74,18 @@ class JWTTokenUtils {
 
 	Boolean isValid(Claims claims) {
 		!isTokenExpired(claims)
+	}
+
+	@PostConstruct
+	init() {
+		if (secret == 'sssshhhh!') {
+			log.warn '********************************************************************************'
+			log.warn '********************************************************************************'
+			log.warn '**  WARNING: Timneh is running with the default secret key. This is fine for   *'
+			log.warn '**     development or testing, but when storing actual user data you           *'
+			log.warn '**     MUST override this with a unique secret. See the README for details.    *'
+			log.warn '********************************************************************************'
+			log.warn '********************************************************************************'
+		}
 	}
 }
