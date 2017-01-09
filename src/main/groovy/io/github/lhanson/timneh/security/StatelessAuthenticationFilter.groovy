@@ -26,61 +26,61 @@ import javax.servlet.http.HttpServletResponse
  * and sets it in the current security context.
  */
 class StatelessAuthenticationFilter extends GenericFilterBean {
-    Logger log = LoggerFactory.getLogger(this.class)
-    JWTTokenUtils tokenUtils
-    String tokenHeader
-    UserDetailsService userDetailsService
-    AuthenticationFailureHandler authenticationFailureHandler
-    StatelessLoginFilter statelessLoginFilter
+	Logger log = LoggerFactory.getLogger(this.class)
+	JWTTokenUtils tokenUtils
+	String tokenHeader
+	UserDetailsService userDetailsService
+	AuthenticationFailureHandler authenticationFailureHandler
+	StatelessLoginFilter statelessLoginFilter
 
-    StatelessAuthenticationFilter(String tokenHeader, JWTTokenUtils tokenUtils, UserDetailsService userDetailsService,
-                                  AuthenticationFailureHandler authFailureHandler, StatelessLoginFilter statelessLoginFilter) {
-        this.tokenHeader = tokenHeader
-        this.tokenUtils = tokenUtils
-        this.userDetailsService = userDetailsService
-        this.authenticationFailureHandler = authFailureHandler
-        this.statelessLoginFilter = statelessLoginFilter
-    }
+	StatelessAuthenticationFilter(String tokenHeader, JWTTokenUtils tokenUtils, UserDetailsService userDetailsService,
+	                              AuthenticationFailureHandler authFailureHandler, StatelessLoginFilter statelessLoginFilter) {
+		this.tokenHeader = tokenHeader
+		this.tokenUtils = tokenUtils
+		this.userDetailsService = userDetailsService
+		this.authenticationFailureHandler = authFailureHandler
+		this.statelessLoginFilter = statelessLoginFilter
+	}
 
-    @Override
-    void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest httpRequest = (HttpServletRequest) request
-        HttpServletResponse httpResponse = (HttpServletResponse) response
-        String token = tokenUtils.readToken(httpRequest.getHeader(tokenHeader))
-        if (token) {
-            log.debug "Read token from header: $token"
-            try {
-                Claims claims = tokenUtils.getClaimsFromToken(token)
-                log.debug "Examining token for username ${claims.getSubject()}"
-                if (tokenUtils.isValid(claims)) {
-                    log.trace "Valid token for ${claims.getSubject()}"
-                    // Derive UserDetails from token rather than doing a database lookup
-                    def user = new UserDetails(
-                            tokenUtils.getUid(claims),
-                            tokenUtils.getUsername(claims),
-                            tokenUtils.getFullname(claims),
-                            '[Not stored in JWT token]',     // password
-                            '[Not stored in JWT token]',     // email
-                            null,                            // created
-                            []                               // granted authorities
-                    )
-                    SecurityContextHolder.context.authentication =
-                            new UserAuthentication(user: user)
-                }
-            } catch (ExpiredJwtException | SignatureException  e) {
-                AuthenticationException ae = new AuthenticationException(e.message, e) { }
-                authenticationFailureHandler.onAuthenticationFailure(httpRequest, httpResponse, ae)
-                return // return 401, don't continue filter chain
-            }
-        } else {
-            // If there isn't a token in the request, try with Basic auth
-            Authentication authentication = statelessLoginFilter.attemptAuthentication(request, response)
-            if (authentication) {
-                log.debug "Loaded non-token authentication"
-                SecurityContextHolder.context.authentication = authentication
-            }
-        }
-        chain.doFilter(request, response)
-    }
+	@Override
+	void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+		HttpServletRequest httpRequest = (HttpServletRequest) request
+		HttpServletResponse httpResponse = (HttpServletResponse) response
+		String token = tokenUtils.readToken(httpRequest.getHeader(tokenHeader))
+		if (token) {
+			log.debug "Read token from header: $token"
+			try {
+				Claims claims = tokenUtils.getClaimsFromToken(token)
+				log.debug "Examining token for username ${claims.getSubject()}"
+				if (tokenUtils.isValid(claims)) {
+					log.trace "Valid token for ${claims.getSubject()}"
+					// Derive UserDetails from token rather than doing a database lookup
+					def user = new UserDetails(
+							tokenUtils.getUid(claims),
+							tokenUtils.getUsername(claims),
+							tokenUtils.getFullname(claims),
+							'[Not stored in JWT token]',     // password
+							'[Not stored in JWT token]',     // email
+							null,                            // created
+							[]                               // granted authorities
+					)
+					SecurityContextHolder.context.authentication =
+							new UserAuthentication(user: user)
+				}
+			} catch (ExpiredJwtException | SignatureException  e) {
+				AuthenticationException ae = new AuthenticationException(e.message, e) { }
+				authenticationFailureHandler.onAuthenticationFailure(httpRequest, httpResponse, ae)
+				return // return 401, don't continue filter chain
+			}
+		} else {
+			// If there isn't a token in the request, try with Basic auth
+			Authentication authentication = statelessLoginFilter.attemptAuthentication(request, response)
+			if (authentication) {
+				log.debug "Loaded non-token authentication"
+				SecurityContextHolder.context.authentication = authentication
+			}
+		}
+		chain.doFilter(request, response)
+	}
 
 }
