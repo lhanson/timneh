@@ -11,7 +11,7 @@ class UserDao extends AbstractDao {
 	UserDetailsRowMapper rowMapper = new UserDetailsRowMapper()
 
 	UserDetails loadUserById(int id) {
-		log.trace "Loading user data for user '$id'"
+		log.trace "Loading user data by ID for '$id'"
 		UserDetails userDetails
 		try {
 			userDetails = namedParameterJdbcTemplate.queryForObject(
@@ -23,7 +23,7 @@ class UserDao extends AbstractDao {
 	}
 
 	UserDetails loadUserByUsername(String username) {
-		log.trace "Loading user data for user '$username'"
+		log.trace "Loading user data by username for '$username'"
 		UserDetails userDetails
 		try {
 			userDetails = namedParameterJdbcTemplate.queryForObject(

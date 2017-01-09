@@ -46,7 +46,7 @@ See the Spring Boot [database initialization docs](http://docs.spring.io/spring-
 ## Authentication
 
 Timneh uses [JSON Web Tokens](https://jwt.io/) for stateless client authentication. The only database lookup
-required is upon initial authentication, subsequent state is stored in the token itself, which is presented
+required is upon initial authentication; subsequent state is stored in the token itself, which is presented
 upon each client request and validated by the server.
 
 A client makes an initial request to `/login` using [HTTP Basic Authentication](https://tools.ietf.org/html/rfc2617).
@@ -57,7 +57,11 @@ client requests include an `Authorization` header using the `Bearer` schema:
 
 ## API
 
-Here's a brief listing of the API endpoints available, and some `curl` examples to invoke them:
+For comprehensive API documentation generated right from the source, check out the interactive
+SwaggerUI documentation at [http://localhost:8081/swagger-ui.html](http://localhost:8081/swagger-ui.html).
+Click the 'Authorize' button at the top of the page to authenticate using Basic auth for each request.
+
+As an overview, here's a brief listing of some API endpoints available, and examples to invoke them with `curl`:
 
     * POST /login (see above)
       curl -u user:password localhost/login
@@ -73,5 +77,3 @@ Here's a brief listing of the API endpoints available, and some `curl` examples 
       
     * POST /comments (for dicussion 1)
       curl --header "Authorization: Bearer [TOKEN]" -X POST -H "Content-Type: application/json" -d 'First post...' localhost/comments/1
-    
-

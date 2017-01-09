@@ -26,11 +26,15 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Autowired AuthenticationManager authenticationManager
 	@Autowired AuthenticationFailureHandler authenticationFailureHandler
 	@Autowired UserDetailsService userDetailsService
+	@Autowired Http401Handler http401Handler
     @Autowired JWTTokenUtils tokenUtils
 	@Value('${jwt.token.header}') String tokenHeader
 
 	@Override
 	protected void configure(HttpSecurity httpSecurity) throws Exception {
+		StatelessLoginFilter statelessLoginFilter = new StatelessLoginFilter(
+				'/login', authenticationManager, authenticationFailureHandler, userDetailsService, tokenUtils)
+
 		httpSecurity
 				.csrf()
 					.disable()
@@ -46,10 +50,10 @@ class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.anyRequest().authenticated()
 					.and()
 
-				 // JWT authentication
-				.addFilterBefore(new StatelessLoginFilter('/login', authenticationManager, authenticationFailureHandler, userDetailsService, tokenUtils),
-					UsernamePasswordAuthenticationFilter)
-				.addFilterBefore(new StatelessAuthenticationFilter(tokenHeader, tokenUtils, userDetailsService, authenticationFailureHandler),
+				// JWT and Basic authentication. Prefer JWT for interactive use, while Basic
+				// is used to initially procure a token or perform an individual request.
+				.addFilterBefore(statelessLoginFilter, UsernamePasswordAuthenticationFilter)
+				.addFilterBefore(new StatelessAuthenticationFilter(tokenHeader, tokenUtils, userDetailsService, authenticationFailureHandler, statelessLoginFilter),
 					UsernamePasswordAuthenticationFilter)
 
 				.exceptionHandling()

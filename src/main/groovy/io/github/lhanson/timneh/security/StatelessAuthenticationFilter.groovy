@@ -1,13 +1,14 @@
 package io.github.lhanson.timneh.security
 
-import io.github.lhanson.timneh.user.UserDetails
 import io.github.lhanson.timneh.user.UserAuthentication
+import io.github.lhanson.timneh.user.UserDetails
 import io.github.lhanson.timneh.user.UserDetailsService
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.ExpiredJwtException
 import io.jsonwebtoken.SignatureException
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.security.core.Authentication
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.authentication.AuthenticationFailureHandler
@@ -30,12 +31,15 @@ class StatelessAuthenticationFilter extends GenericFilterBean {
     String tokenHeader
     UserDetailsService userDetailsService
     AuthenticationFailureHandler authenticationFailureHandler
+    StatelessLoginFilter statelessLoginFilter
 
-    StatelessAuthenticationFilter(String tokenHeader, JWTTokenUtils tokenUtils, UserDetailsService userDetailsService, AuthenticationFailureHandler authFailureHandler) {
+    StatelessAuthenticationFilter(String tokenHeader, JWTTokenUtils tokenUtils, UserDetailsService userDetailsService,
+                                  AuthenticationFailureHandler authFailureHandler, StatelessLoginFilter statelessLoginFilter) {
         this.tokenHeader = tokenHeader
         this.tokenUtils = tokenUtils
         this.userDetailsService = userDetailsService
         this.authenticationFailureHandler = authFailureHandler
+        this.statelessLoginFilter = statelessLoginFilter
     }
 
     @Override
@@ -43,8 +47,8 @@ class StatelessAuthenticationFilter extends GenericFilterBean {
         HttpServletRequest httpRequest = (HttpServletRequest) request
         HttpServletResponse httpResponse = (HttpServletResponse) response
         String token = tokenUtils.readToken(httpRequest.getHeader(tokenHeader))
-        log.debug "Read token from header: $token"
         if (token) {
+            log.debug "Read token from header: $token"
             try {
                 Claims claims = tokenUtils.getClaimsFromToken(token)
                 log.debug "Examining token for username ${claims.getSubject()}"
@@ -66,8 +70,14 @@ class StatelessAuthenticationFilter extends GenericFilterBean {
             } catch (ExpiredJwtException | SignatureException  e) {
                 AuthenticationException ae = new AuthenticationException(e.message, e) { }
                 authenticationFailureHandler.onAuthenticationFailure(httpRequest, httpResponse, ae)
-                println "returning"
                 return // return 401, don't continue filter chain
+            }
+        } else {
+            // If there isn't a token in the request, try with Basic auth
+            Authentication authentication = statelessLoginFilter.attemptAuthentication(request, response)
+            if (authentication) {
+                log.debug "Loaded non-token authentication"
+                SecurityContextHolder.context.authentication = authentication
             }
         }
         chain.doFilter(request, response)
